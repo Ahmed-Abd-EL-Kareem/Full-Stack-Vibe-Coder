@@ -11,44 +11,52 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        stunning: {
-          50: "#f5f3ff",
-          100: "#ede9fe",
-          200: "#ddd6fe",
-          300: "#c4b5fd",
-          400: "#a78bfa",
-          500: "#8b5cf6",
-          600: "#7c3aed",
-          700: "#6d28d9",
-          800: "#5b21b6",
-          900: "#4c1d95",
-          950: "#2e1065",
+        ballet: {
+          ground: "#FFF8F6",
+          canvas: "#FFF1EC",
+          container: "#FFE9E2",
+          surfaceHigh: "#F9E4DC",
+          surfaceHighest: "#F3DED7",
+          border: "#E8D5CE",
+          borderHover: "#D1C3CB",
+          plum: "#32102F",
+          plumLight: "#4A2545",
+          rose: "#D9A5A0",
+          blush: "#FFDAD6",
+          taupe: "#80747B",
+          espresso: "#241915",
+          mutedPlum: "#4E444B",
+          sage: "#A8B79A",
+        },
+        brand: {
+          DEFAULT: "#4A2545",
+          hover: "#32102F",
+          light: "#D9A5A0",
+          subtle: "#FFE9E2",
+          border: "#E8D5CE",
         },
         surface: {
-          DEFAULT: "#0F1117",
-          card: "#161922",
-          border: "#262B3B",
-          hover: "#1F2432",
-          muted: "#8F9BAE"
+          DEFAULT: "#FFF8F6",
+          card: "#FFFFFF",
+          cardHover: "#FFF1EC",
+          elevated: "#FFE9E2",
+          border: "#E8D5CE",
+          borderHover: "#D1C3CB",
+          muted: "#80747B",
+          highlight: "#32102F"
         }
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'grid-pattern': "radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px)",
+      fontFamily: {
+        serif: ['Playfair Display', 'Georgia', 'serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Sora', 'system-ui', 'sans-serif'],
+        body: ['Sora', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
-      animation: {
-        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
-        'shimmer': 'shimmer 2s linear infinite',
-      },
-      keyframes: {
-        pulseGlow: {
-          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-          '50%': { opacity: '0.8', transform: 'scale(1.05)' },
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        }
+      boxShadow: {
+        'ballet-card': '0 2px 10px rgba(74, 37, 69, 0.04), 0 1px 3px rgba(74, 37, 69, 0.02)',
+        'ballet-elevated': '0 12px 30px rgba(74, 37, 69, 0.08), 0 4px 8px rgba(74, 37, 69, 0.04)',
+        'plum-focus': '0 0 0 3px rgba(74, 37, 69, 0.15)',
       }
     },
   },

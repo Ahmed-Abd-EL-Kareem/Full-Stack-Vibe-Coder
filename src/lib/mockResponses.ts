@@ -32,13 +32,13 @@ export function generateSmartMockResponse(
   const integrationNames = selectedIntegrations.map(i => i.name);
   const integrationListStr = integrationNames.length > 0
     ? integrationNames.join(', ')
-    : 'Custom Core Stack';
+    : 'Standalone Next.js Core';
 
   const appName = extractAppName(userPrompt, integrationNames);
-  const themeColor = selectedIntegrations[0]?.brandColor || '#8B5CF6';
+  const themeColor = selectedIntegrations[0]?.brandColor || '#00F0FF';
 
   const endpoints = [
-    { method: 'POST', path: '/api/v1/orchestrate', description: 'Central dispatch endpoint for user actions and pipeline execution' }
+    { method: 'POST', path: '/api/v1/orchestrate', description: 'Central dispatch endpoint with session verification and idempotency locks' }
   ];
 
   if (selectedIntegrations.some(i => i.id === 'stripe')) {
@@ -64,12 +64,13 @@ export function generateSmartMockResponse(
   }
 
   if (selectedIntegrations.some(i => i.id === 'supabase')) {
-    endpoints.push({ method: 'GET', path: '/api/data/records', description: 'Queries Postgres tables with RLS and realtime subscriptions' });
+    endpoints.push({ method: 'GET', path: '/api/data/records', description: 'Queries Postgres tables with Row Level Security (RLS)' });
+    endpoints.push({ method: 'POST', path: '/api/data/records', description: 'Inserts record with authenticated user UUID verification' });
   }
 
   const flowSteps = [
     `User interacts with the frontend interface submitting: "${userPrompt.slice(0, 80)}..."`,
-    `Next.js Server Action validates request payload and checks idempotency headers`,
+    `Next.js Server Action validates request payload with Zod and checks idempotency headers`,
     ...selectedIntegrations.map(i => `Dispatches event to **${i.name}** service layer (${i.systemContext.role})`),
     `Aggregates results and updates client state in real-time with zero full-page reloads`
   ];
@@ -87,14 +88,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, payload, userId } = body;
 
-    console.log(\`[Orchestrator] Processing \${action} for user \${userId}\`);
+    console.log(\`[Orchestrator] Processing \${action} for user \${userId || 'anonymous'}\`);
 
     // Injected integrations execution pipeline: [${integrationListStr}]
     const results: Record<string, any> = {};
 
-${selectedIntegrations.map(i => `    // 🔌 Execute ${i.name} Integration
+${selectedIntegrations.map(i => `    // 🔌 Execute ${i.name} Integration Pipeline
     try {
-      results['${i.id}'] = { status: 'success', timestamp: new Date().toISOString() };
+      results['${i.id}'] = {
+        status: 'success',
+        endpoint: '${i.systemContext.apiEndpoints[0]}',
+        timestamp: new Date().toISOString()
+      };
     } catch (err: any) {
       console.error('Failed to dispatch to ${i.name}:', err);
       results['${i.id}'] = { status: 'error', error: err.message };
@@ -119,7 +124,7 @@ ${selectedIntegrations.map(i => `    // 🔌 Execute ${i.name} Integration
       code: `'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, ArrowUpRight, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Sparkles, ArrowUpRight, CheckCircle2, ShieldCheck, Activity } from 'lucide-react';
 
 export default function AppDashboard() {
   const [loading, setLoading] = useState(false);
@@ -129,13 +134,13 @@ export default function AppDashboard() {
     setLoading(true);
     setStatus('Dispatching across ${integrationListStr}...');
     try {
-      const res = await fetch('/api/orchestrator', {
+      const res = await fetch('/api/v1/orchestrate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'TRIGGER_WORKFLOW', payload: { source: 'stunning-ui' } })
       });
       const data = await res.json();
-      setStatus('Workflow executed successfully!');
+      setStatus('Workflow executed successfully across all tiers!');
     } catch (err) {
       setStatus('Execution failed. Check integration configuration.');
     } finally {
@@ -144,37 +149,63 @@ export default function AppDashboard() {
   };
 
   return (
-    <div className="rounded-2xl border border-surface-border bg-surface-card p-6 text-white">
+    <div className="rounded-3xl border border-surface-border bg-[#0B0E14] p-6 text-white shadow-2xl">
       <div className="flex items-center justify-between pb-4 border-b border-surface-border">
         <div>
-          <h2 className="text-xl font-bold">${appName}</h2>
-          <p className="text-sm text-surface-muted">Connected to: ${integrationListStr}</p>
+          <h2 className="font-display text-xl font-bold">${appName}</h2>
+          <p className="text-xs text-surface-muted mt-0.5">Connected Services: ${integrationListStr}</p>
         </div>
         <button
           onClick={handleTriggerPipeline}
           disabled={loading}
-          className="flex items-center gap-2 rounded-lg bg-stunning-600 px-4 py-2 text-sm font-medium hover:bg-stunning-500 transition disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-600 px-4 py-2 text-xs font-mono font-bold text-white shadow-glow-cyan/20 hover:brightness-110 active:scale-95 transition disabled:opacity-50"
         >
           <Sparkles className="h-4 w-4" />
-          {loading ? 'Executing...' : 'Run Pipeline'}
+          {loading ? 'Synthesizing...' : 'Run Pipeline'}
         </button>
       </div>
 
       {status && (
-        <div className="mt-4 p-3 rounded-lg bg-stunning-950 border border-stunning-800 text-stunning-300 text-sm flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-          {status}
+        <div className="mt-4 p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-mono flex items-center gap-2.5">
+          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+          <span>{status}</span>
         </div>
       )}
     </div>
   );
+}`
+    },
+    {
+      filename: 'src/types/schema.d.ts',
+      language: 'typescript',
+      code: `export interface OrchestrationPayload {
+  action: string;
+  userId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface IntegrationExecutionResult {
+  status: 'success' | 'error' | 'pending';
+  endpoint: string;
+  timestamp: string;
+  error?: string;
+}
+
+export interface OrchestrationResponse {
+  success: boolean;
+  data?: {
+    action: string;
+    results: Record<string, IntegrationExecutionResult>;
+    executedAt: string;
+  };
+  error?: string;
 }`
     }
   ];
 
   const markdownContent = `# 🚀 ${appName}
 
-**Prompt:** *${userPrompt}*
+**Application Specification:** *${userPrompt}*
 
 **Active Injected Integrations:** ${integrationNames.length > 0 ? integrationNames.map(n => `\`${n}\``).join(' • ') : '*None (Self-Contained Fullstack App)*'}
 
@@ -220,8 +251,8 @@ The generated solution includes fully typed route handlers and reactive componen
   "themeColor": "${themeColor}",
   "stats": [
     { "label": "Active Integrations", "value": "${selectedIntegrations.length}", "change": "+100%" },
-    { "label": "Pipeline Latency", "value": "42ms", "change": "-18%" },
-    { "label": "Reliability SLA", "value": "99.99%", "change": "+0.04%" }
+    { "label": "Pipeline Latency", "value": "28ms", "change": "-24%" },
+    { "label": "Reliability SLA", "value": "99.99%", "change": "+0.05%" }
   ],
   "recentActivity": [
     ${selectedIntegrations.map((i, idx) => `{
@@ -259,7 +290,7 @@ The generated solution includes fully typed route handlers and reactive componen
       themeColor,
       stats: [
         { label: 'Integrations Active', value: `${selectedIntegrations.length}`, change: 'Ready' },
-        { label: 'Avg Latency', value: '38ms', change: 'Edge' },
+        { label: 'Avg Latency', value: '28ms', change: 'Edge' },
         { label: 'Uptime SLA', value: '99.99%', change: 'Healthy' }
       ],
       recentActivity: selectedIntegrations.map((i, idx) => ({
@@ -279,9 +310,9 @@ function extractAppName(prompt: string, integrations: string[]): string {
   const cleaned = prompt.replace(/[^\w\s]/gi, '').trim();
   const words = cleaned.split(/\s+/).slice(0, 3);
   if (words.length > 0 && words[0].length > 2) {
-    return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') + ' Hub';
+    return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') + ' Studio';
   }
   return integrations.length > 0
-    ? `${integrations.join(' & ')} Platform`
+    ? `${integrations.join(' & ')} Hub`
     : 'Stunning App Platform';
 }

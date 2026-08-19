@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Key, FileText, CheckCircle2, Cpu } from 'lucide-react';
+import { Sparkles, Key, FileText, Cpu, ArrowUpRight } from 'lucide-react';
 
 interface NavbarProps {
   onOpenApiKeyModal: () => void;
@@ -11,63 +11,59 @@ interface NavbarProps {
 
 export default function Navbar({ onOpenApiKeyModal, apiKeySet, onViewDoc }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-surface-border/80 bg-surface/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-[#E8D5CE] bg-[#FFF8F6]/95 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-stunning-700 via-stunning-500 to-indigo-400 shadow-lg shadow-stunning-500/20">
-            <Sparkles className="h-5 w-5 text-white animate-pulse" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#4A2545] text-white font-serif font-bold shadow-sm">
+            <span className="font-serif text-sm italic">S</span>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold tracking-tight text-white">Stunning</span>
-              <span className="rounded-full bg-stunning-500/10 px-2 py-0.5 text-xs font-semibold text-stunning-300 border border-stunning-500/20">
-                Vibe Coder
-              </span>
-            </div>
+
+          <div className="flex items-center gap-2">
+            <span className="font-serif text-base font-bold text-[#32102F] tracking-tight">
+              Stunning
+            </span>
+            <span className="rounded-full bg-[#FFE9E2] px-2.5 py-0.5 font-sans text-xs font-medium text-[#4A2545] border border-[#E8D5CE]">
+              Builder
+            </span>
           </div>
         </div>
 
-        {/* Navigation & Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Docs Modals */}
+        {/* Center Quick Nav / Docs */}
+        <nav className="hidden md:flex items-center gap-1.5 bg-[#FFFFFF] px-2 py-1 rounded-full border border-[#E8D5CE] shadow-sm">
           <button
             onClick={() => onViewDoc('decisions')}
-            className="hidden sm:flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-gray-600 transition"
+            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#4E444B] hover:text-[#32102F] rounded-full hover:bg-[#FFE9E2] transition"
           >
-            <FileText className="h-3.5 w-3.5 text-stunning-400" />
+            <FileText className="h-3.5 w-3.5 text-[#4A2545]" />
             <span>DECISIONS.md</span>
           </button>
 
           <button
             onClick={() => onViewDoc('tech')}
-            className="hidden sm:flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-gray-600 transition"
+            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#4E444B] hover:text-[#32102F] rounded-full hover:bg-[#FFE9E2] transition"
           >
-            <Cpu className="h-3.5 w-3.5 text-emerald-400" />
-            <span>TECH.md</span>
+            <Cpu className="h-3.5 w-3.5 text-[#A8B79A]" />
+            <span>TECH.md (MCP)</span>
           </button>
+        </nav>
 
-          {/* API Key / Provider Config */}
+        {/* Right Action: API Mode / Key */}
+        <div className="flex items-center gap-2">
           <button
             onClick={onOpenApiKeyModal}
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+            className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition duration-150 ${
               apiKeySet
-                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
-                : 'border-surface-border bg-surface-card text-gray-300 hover:text-white hover:border-surface-muted'
+                ? 'border-[#A8B79A] bg-[#A8B79A]/15 text-[#2E4A28] hover:bg-[#A8B79A]/25'
+                : 'border-[#E8D5CE] bg-[#FFFFFF] text-[#4E444B] hover:text-[#32102F] hover:border-[#D9A5A0] shadow-sm'
             }`}
           >
-            {apiKeySet ? (
-              <>
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="hidden xs:inline">Live AI Key Active</span>
-                <span className="xs:hidden">Live Key</span>
-              </>
-            ) : (
-              <>
-                <Key className="h-3.5 w-3.5 text-stunning-400" />
-                <span>Simulation / API Key</span>
-              </>
-            )}
+            <span
+              className={`h-2 w-2 rounded-full ${
+                apiKeySet ? 'bg-[#A8B79A]' : 'bg-[#D9A5A0]'
+              }`}
+            />
+            <span>{apiKeySet ? 'Live Key Active' : 'Simulation Mode'}</span>
           </button>
         </div>
       </div>

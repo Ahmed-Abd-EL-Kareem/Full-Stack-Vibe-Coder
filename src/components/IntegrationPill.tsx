@@ -9,8 +9,7 @@ import {
   Table,
   Database,
   Webhook,
-  Check,
-  Plus
+  Check
 } from 'lucide-react';
 import { Integration } from '@/lib/integrations';
 
@@ -41,38 +40,58 @@ export default function IntegrationPill({
     <button
       type="button"
       onClick={() => onToggle(integration.id)}
-      className={`group relative flex items-center gap-2.5 rounded-xl border px-3.5 py-2 text-left transition-all duration-200 ${
+      className={`group relative flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-200 select-none ${
         isSelected
-          ? 'border-stunning-500 bg-stunning-950/70 text-white shadow-lg shadow-stunning-500/10 ring-1 ring-stunning-500/50'
-          : 'border-surface-border bg-surface-card/60 text-gray-300 hover:border-gray-600 hover:bg-surface-hover/80 hover:text-white'
+          ? 'border-[#4A2545] bg-[#FFE9E2] text-[#32102F] shadow-sm ring-1 ring-[#4A2545]/30'
+          : 'border-[#E8D5CE] bg-[#FFFFFF] text-[#4E444B] hover:border-[#D9A5A0] hover:bg-[#FFF1EC] hover:text-[#32102F] shadow-ballet-card'
       }`}
     >
-      {/* Icon with Brand Accent */}
+      {/* Icon */}
       <div
-        className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 transition-colors"
-        style={{
-          backgroundColor: isSelected ? `${integration.brandColor}22` : 'rgba(255, 255, 255, 0.05)',
-          color: integration.brandColor,
-        }}
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors mt-0.5 ${
+          isSelected
+            ? 'border-[#4A2545]/40 bg-[#4A2545] text-white'
+            : 'border-[#E8D5CE] bg-[#FFF1EC] text-[#4A2545] group-hover:bg-[#FFE9E2]'
+        }`}
       >
         <IconComponent className="h-4 w-4" />
       </div>
 
       {/* Text Info */}
-      <div className="flex flex-col">
-        <span className="text-xs font-semibold leading-tight">{integration.name}</span>
-        <span className="text-[10px] text-surface-muted leading-tight">{integration.tagline}</span>
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-1">
+          <span className="font-sans text-xs font-bold text-[#32102F] truncate">
+            {integration.name}
+          </span>
+          <span
+            className={`font-mono text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${
+              isSelected
+                ? 'bg-[#4A2545] text-white'
+                : 'bg-[#FFF1EC] text-[#80747B]'
+            }`}
+          >
+            {integration.category}
+          </span>
+        </div>
+
+        <span className="text-xs text-[#4E444B] leading-tight mt-1 truncate font-sans">
+          {integration.tagline}
+        </span>
+
+        <span className="text-[11px] font-mono text-[#80747B] mt-1.5 truncate">
+          {integration.systemContext.apiEndpoints[0]}
+        </span>
       </div>
 
-      {/* Indicator */}
+      {/* Check indicator */}
       <div
-        className={`ml-auto flex h-4 w-4 items-center justify-center rounded-full transition-all ${
+        className={`ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-all mt-0.5 ${
           isSelected
-            ? 'bg-stunning-500 text-white shadow-sm'
-            : 'bg-surface-border text-surface-muted group-hover:text-gray-200'
+            ? 'bg-[#4A2545] text-white'
+            : 'border border-[#E8D5CE] bg-white text-transparent group-hover:border-[#D9A5A0]'
         }`}
       >
-        {isSelected ? <Check className="h-2.5 w-2.5" /> : <Plus className="h-2.5 w-2.5" />}
+        <Check className="h-2.5 w-2.5 stroke-[3]" />
       </div>
     </button>
   );

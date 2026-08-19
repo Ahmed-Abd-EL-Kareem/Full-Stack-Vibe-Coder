@@ -10,6 +10,8 @@ import ApiKeyModal from '@/components/ApiKeyModal';
 import DocModal from '@/components/DocModal';
 import { PRESET_PROMPTS } from '@/lib/integrations';
 import { buildInjectedSystemPrompt } from '@/lib/promptBuilder';
+import { generateSmartMockResponse } from '@/lib/mockResponses';
+import { AVAILABLE_INTEGRATIONS } from '@/lib/integrations';
 
 export default function Home() {
   const [prompt, setPrompt] = useState<string>(
@@ -23,7 +25,8 @@ export default function Home() {
   const [systemPrompt, setSystemPrompt] = useState<string>('');
   const [streamingText, setStreamingText] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [hasGenerated, setHasGenerated] = useState<boolean>(false);
+  const [hasGenerated, setHasGenerated] = useState<boolean>(true); // Initialized true for instant interactive split console!
+  const [hasError, setHasError] = useState<boolean>(false);
   const [mockResult, setMockResult] = useState<any>(null);
   const [injectedMetadata, setInjectedMetadata] = useState<any>(null);
 
@@ -33,9 +36,9 @@ export default function Home() {
   const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState<'gemini' | 'openai'>('gemini');
 
-  const responseSectionRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Load stored API key config on mount
+  // Load stored API key config and pre-populate initial preview state on mount
   useEffect(() => {
     try {
       const storedKey = localStorage.getItem('stunning_api_key');
@@ -44,16 +47,27 @@ export default function Home() {
       if (storedProv) setProvider(storedProv);
     } catch {}
 
-    // Pre-calculate initial system prompt for preview
     const initialInjection = buildInjectedSystemPrompt(prompt, selectedIntegrations);
     setSystemPrompt(initialInjection.systemPrompt);
+    setInjectedMetadata(initialInjection.injectedMetadata);
+
+    const activeIntegrationsList = AVAILABLE_INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
+    const initialMock = generateSmartMockResponse(prompt, activeIntegrationsList);
+    setMockResult(initialMock);
+    setStreamingText(initialMock.markdownContent);
   }, []);
 
-  // Update prompt inspector whenever selections change
+  // Synchronize live system prompt and preview state when selection changes
   useEffect(() => {
     if (prompt.trim()) {
       const injection = buildInjectedSystemPrompt(prompt, selectedIntegrations);
       setSystemPrompt(injection.systemPrompt);
+      setInjectedMetadata(injection.injectedMetadata);
+
+      // Keep mock result reactive when user toggles integrations
+      const activeIntegrationsList = AVAILABLE_INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
+      const smartMock = generateSmartMockResponse(prompt, activeIntegrationsList);
+      setMockResult(smartMock);
     }
   }, [prompt, selectedIntegrations]);
 
@@ -71,18 +85,24 @@ export default function Home() {
     setSelectedIntegrations(preset.integrations);
   };
 
+  const handleCancelGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
+  };
+
   const handleSubmit = async () => {
     if (!prompt.trim() || isGenerating) return;
 
     setIsGenerating(true);
     setHasGenerated(true);
+    setHasError(false);
     setStreamingText('');
-    setMockResult(null);
 
-    // Scroll smoothly to response section
-    setTimeout(() => {
-      responseSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const response = await fetch('/api/generate', {
@@ -93,7 +113,8 @@ export default function Home() {
           selectedIntegrations,
           apiKey: apiKey || undefined,
           provider
-        })
+        }),
+        signal: controller.signal
       });
 
       if (!response.ok) {
@@ -138,15 +159,16 @@ export default function Home() {
                 accumulatedText += data.text;
                 setStreamingText(accumulatedText);
               } else if (currentEvent === 'done') {
-                // Celebration trigger!
-                confetti({
-                  particleCount: 80,
-                  spread: 70,
-                  origin: { y: 0.6 }
-                });
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (!prefersReducedMotion) {
+                  confetti({
+                    particleCount: 75,
+                    spread: 60,
+                    origin: { y: 0.6 }
+                  });
+                }
               }
             } catch {
-              // Plain text fallback
               accumulatedText += dataStr;
               setStreamingText(accumulatedText);
             }
@@ -154,23 +176,28 @@ export default function Home() {
         }
       }
 
-      // If mock result wasn't sent in metadata, construct fallback structure
       if (!mockResult) {
         const fallbackInjection = buildInjectedSystemPrompt(prompt, selectedIntegrations);
         setInjectedMetadata(fallbackInjection.injectedMetadata);
       }
     } catch (err: any) {
-      console.error('Generation error:', err);
-      setStreamingText(prev => prev + `\n\n⚠️ Error during generation: ${err.message}`);
+      if (err.name === 'AbortError') {
+        setStreamingText(prev => prev + '\n\n[Generation cancelled by user]');
+      } else {
+        console.error('Generation error:', err);
+        setHasError(true);
+        setStreamingText(prev => prev + `\n\n⚠️ Error during generation: ${err.message}`);
+      }
     } finally {
       setIsGenerating(false);
+      abortControllerRef.current = null;
     }
   };
 
-  const appName = prompt.split(' ')[0] ? `${prompt.split(' ').slice(0, 3).join(' ')} Platform` : 'Stunning AI Platform';
+  const appName = mockResult?.title || (prompt.split(' ')[0] ? `${prompt.split(' ').slice(0, 3).join(' ')} Platform` : 'Stunning Platform');
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FFF8F6] text-[#241915]">
       {/* Navbar */}
       <Navbar
         onOpenApiKeyModal={() => setApiKeyModalOpen(true)}
@@ -178,24 +205,29 @@ export default function Home() {
         onViewDoc={(doc) => setDocModalType(doc)}
       />
 
-      {/* Main Hero & Studio */}
-      <main className="flex-1">
+      {/* Main Split Console */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6">
         <Hero onSelectPreset={handleSelectPreset} />
 
-        <PromptStudio
-          prompt={prompt}
-          setPrompt={setPrompt}
-          selectedIntegrations={selectedIntegrations}
-          setSelectedIntegrations={setSelectedIntegrations}
-          onSubmit={handleSubmit}
-          isLoading={isGenerating}
-        />
+        {/* Split Workstation: Left Input Deck | Right Studio Hub */}
+        <div className="mt-5 pb-16 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column (5 Cols on LG): Input Deck */}
+          <div className="lg:col-span-5 sticky lg:top-20">
+            <PromptStudio
+              prompt={prompt}
+              setPrompt={setPrompt}
+              selectedIntegrations={selectedIntegrations}
+              setSelectedIntegrations={setSelectedIntegrations}
+              onSubmit={handleSubmit}
+              onCancel={handleCancelGeneration}
+              isLoading={isGenerating}
+            />
+          </div>
 
-        {/* Response Section */}
-        <div ref={responseSectionRef}>
-          {hasGenerated && (
+          {/* Right Column (7 Cols on LG): Response & Live Studio */}
+          <div className="lg:col-span-7">
             <ResponseViewer
-              appName={mockResult?.title || appName}
+              appName={appName}
               userPrompt={prompt}
               selectedIntegrations={selectedIntegrations}
               systemPrompt={systemPrompt}
@@ -203,32 +235,35 @@ export default function Home() {
               isStreaming={isGenerating}
               mockResult={mockResult}
               injectedMetadata={injectedMetadata}
+              onRetry={handleSubmit}
+              hasError={hasError}
             />
-          )}
+          </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-surface-border bg-surface/50 py-8 text-center text-xs text-surface-muted">
-        <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-[#E8D5CE] bg-[#FFF1EC] py-6 text-xs text-[#80747B] font-sans">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">Stunning Full-Stack Vibe Coder Assessment</span>
-            <span>• Built for Stunning.so</span>
+            <span className="font-serif font-bold text-[#32102F]">Stunning Studio</span>
+            <span className="text-[#E8D5CE]">•</span>
+            <span className="text-[#4A2545] font-medium">Digital Choreography (Ballet Aesthetic)</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-xs font-sans">
             <button
               onClick={() => setDocModalType('decisions')}
-              className="text-gray-400 hover:text-white transition"
+              className="text-[#4E444B] hover:text-[#32102F] transition"
             >
-              DECISIONS.md
+              DECISIONS.md (Part 2)
             </button>
-            <span>•</span>
+            <span className="text-[#E8D5CE]">•</span>
             <button
               onClick={() => setDocModalType('tech')}
-              className="text-gray-400 hover:text-white transition"
+              className="text-[#4E444B] hover:text-[#32102F] transition"
             >
-              TECH.md
+              TECH.md (Part 3 MCP)
             </button>
           </div>
         </div>

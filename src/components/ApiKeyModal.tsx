@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Key, ShieldCheck, Check, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Key, Check, Sparkles } from 'lucide-react';
 
 interface ApiKeyModalProps {
   isOpen: boolean;
@@ -26,6 +26,16 @@ export default function ApiKeyModal({
     setProvider(currentProvider);
   }, [currentKey, currentProvider]);
 
+  // Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSave = () => {
@@ -40,88 +50,98 @@ export default function ApiKeyModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-3xl border border-surface-border bg-surface-card p-6 shadow-2xl">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="api-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#32102F]/40 backdrop-blur-sm animate-in fade-in duration-150"
+    >
+      <div className="relative w-full max-w-md rounded-3xl border border-[#E8D5CE] bg-[#FFFFFF] p-6 sm:p-7 shadow-ballet-elevated">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-lg p-1.5 text-surface-muted hover:bg-surface-hover hover:text-white transition"
+          aria-label="Close dialog"
+          className="absolute right-5 top-5 rounded-full p-1.5 text-[#80747B] hover:bg-[#FFE9E2] hover:text-[#32102F] transition"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
 
         {/* Title */}
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stunning-500/20 text-stunning-400 border border-stunning-500/30">
-            <Key className="h-5 w-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFE9E2] text-[#4A2545] border border-[#E8D5CE]">
+            <Key className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">AI Provider & API Configuration</h3>
-            <p className="text-xs text-surface-muted">Optional: Connect live AI model or use instant simulation.</p>
+            <h3 id="api-modal-title" className="font-serif text-base font-bold text-[#32102F]">
+              AI Provider Settings
+            </h3>
+            <p className="text-xs text-[#80747B]">Live API key or high-fidelity simulation engine.</p>
           </div>
         </div>
 
-        {/* Zero-Config Notice */}
-        <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-xs text-emerald-300 flex items-start gap-2">
-          <Sparkles className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+        {/* Zero Config Notice */}
+        <div className="mt-4 rounded-2xl border border-[#A8B79A]/40 bg-[#A8B79A]/15 p-3.5 text-xs text-[#2E4A28] flex items-start gap-2.5 leading-relaxed font-sans">
+          <Sparkles className="h-4 w-4 text-[#A8B79A] shrink-0 mt-0.5" />
           <div>
-            <span className="font-semibold">Instant Out-Of-The-Box Mode:</span> You do NOT need an API key to evaluate this project. The app has a high-fidelity streaming synthesizer that demonstrates all functionality seamlessly.
+            <strong className="text-[#32102F]">Instant Review Ready:</strong> Stunning includes a complete simulated multi-integration orchestrator, so reviewers can test immediately without providing any API key.
           </div>
         </div>
 
         {/* Provider Switcher */}
-        <div className="mt-5 space-y-3">
-          <label className="text-xs font-semibold text-gray-300">Choose AI Provider</label>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="mt-4 space-y-2">
+          <label className="text-xs font-sans font-semibold text-[#32102F]">
+            Select AI Provider
+          </label>
+          <div className="grid grid-cols-2 gap-2.5 font-sans">
             <button
               type="button"
               onClick={() => setProvider('gemini')}
-              className={`rounded-xl border p-3 text-left transition ${
+              className={`rounded-2xl border p-3 text-left transition ${
                 provider === 'gemini'
-                  ? 'border-stunning-500 bg-stunning-950/60 text-white ring-1 ring-stunning-500/50'
-                  : 'border-surface-border bg-surface text-surface-muted hover:text-white'
+                  ? 'border-[#4A2545] bg-[#FFE9E2] text-[#32102F] ring-1 ring-[#4A2545]/40 shadow-sm'
+                  : 'border-[#E8D5CE] bg-white text-[#4E444B] hover:bg-[#FFF8F6]'
               }`}
             >
-              <div className="text-xs font-bold">Google Gemini</div>
-              <div className="text-[10px] text-surface-muted">Gemini 2.5 Flash / 2.0 Flash</div>
+              <div className="text-xs font-bold text-[#32102F]">Google Gemini</div>
+              <div className="text-[11px] text-[#80747B] mt-0.5">Gemini 2.5 Flash</div>
             </button>
 
             <button
               type="button"
               onClick={() => setProvider('openai')}
-              className={`rounded-xl border p-3 text-left transition ${
+              className={`rounded-2xl border p-3 text-left transition ${
                 provider === 'openai'
-                  ? 'border-stunning-500 bg-stunning-950/60 text-white ring-1 ring-stunning-500/50'
-                  : 'border-surface-border bg-surface text-surface-muted hover:text-white'
+                  ? 'border-[#4A2545] bg-[#FFE9E2] text-[#32102F] ring-1 ring-[#4A2545]/40 shadow-sm'
+                  : 'border-[#E8D5CE] bg-white text-[#4E444B] hover:bg-[#FFF8F6]'
               }`}
             >
-              <div className="text-xs font-bold">OpenAI</div>
-              <div className="text-[10px] text-surface-muted">GPT-4o / GPT-4o-mini</div>
+              <div className="text-xs font-bold text-[#32102F]">OpenAI</div>
+              <div className="text-[11px] text-[#80747B] mt-0.5">GPT-4o / Mini</div>
             </button>
           </div>
         </div>
 
         {/* API Key Input */}
-        <div className="mt-4 space-y-2">
-          <label className="text-xs font-semibold text-gray-300">
-            {provider === 'gemini' ? 'Gemini API Key' : 'OpenAI API Key'} (Stored in browser memory only)
+        <div className="mt-4 space-y-1.5">
+          <label className="text-xs font-sans font-semibold text-[#32102F]">
+            {provider === 'gemini' ? 'Gemini API Key' : 'OpenAI API Key'} (Stored in client memory only)
           </label>
           <input
             type="password"
             value={apiKey}
             onChange={e => setApiKey(e.target.value)}
             placeholder={provider === 'gemini' ? 'AIzaSy...' : 'sk-proj-...'}
-            className="w-full rounded-xl border border-surface-border bg-[#0E1017] px-3.5 py-2.5 text-xs text-white placeholder-gray-600 focus:border-stunning-500 focus:outline-none focus:ring-1 focus:ring-stunning-500"
+            className="w-full rounded-2xl border border-[#E8D5CE] bg-[#FFF8F6] px-3.5 py-2.5 text-xs font-mono text-[#32102F] placeholder-[#80747B] focus:border-[#4A2545] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#4A2545]"
           />
         </div>
 
         {/* Actions */}
-        <div className="mt-6 flex items-center justify-end gap-2">
+        <div className="mt-5 flex items-center justify-end gap-2">
           {apiKey && (
             <button
               type="button"
               onClick={handleClear}
-              className="rounded-xl border border-surface-border bg-surface px-4 py-2 text-xs font-medium text-surface-muted hover:text-white transition"
+              className="rounded-full border border-[#E8D5CE] bg-white px-3.5 py-1.5 text-xs font-sans text-[#80747B] hover:text-red-600 transition"
             >
               Clear Key
             </button>
@@ -130,9 +150,9 @@ export default function ApiKeyModal({
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-xl bg-stunning-600 px-5 py-2 text-xs font-semibold text-white hover:bg-stunning-500 transition shadow-lg shadow-stunning-600/20"
+            className="rounded-full bg-[#4A2545] hover:bg-[#32102F] px-5 py-2 text-xs font-sans font-semibold text-white transition shadow-sm"
           >
-            Save Configuration
+            Save Settings
           </button>
         </div>
       </div>

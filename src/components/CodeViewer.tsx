@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Copy, Check, FileCode, Download, Code2 } from 'lucide-react';
+import { Copy, Check, FileCode, Download, FolderTree } from 'lucide-react';
 
 interface CodeFile {
   filename: string;
@@ -18,11 +18,30 @@ export default function CodeViewer({ codeFiles = [], rawMarkdown = '' }: CodeVie
   const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  const currentFile = codeFiles[activeFileIndex] || {
-    filename: 'GeneratedApp.tsx',
-    language: 'tsx',
-    code: '// No code generated yet. Submit a prompt to generate production code.'
-  };
+  const defaultFiles: CodeFile[] = [
+    {
+      filename: 'src/app/api/orchestrator/route.ts',
+      language: 'typescript',
+      code: `import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(req: NextRequest) {
+  try {
+    const { action, payload, userId } = await req.json();
+    console.log(\`[Orchestrator] Dispatching action: \${action}\`);
+
+    return NextResponse.json({
+      success: true,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}`
+    }
+  ];
+
+  const files = codeFiles.length > 0 ? codeFiles : defaultFiles;
+  const currentFile = files[activeFileIndex] || files[0];
 
   const handleCopy = () => {
     navigator.clipboard.writeText(currentFile.code);
@@ -43,71 +62,80 @@ export default function CodeViewer({ codeFiles = [], rawMarkdown = '' }: CodeVie
   const lines = currentFile.code.split('\n');
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-surface-border bg-[#0E1017] shadow-2xl">
-      {/* File Tabs & Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-border bg-[#12151F] px-4 py-2.5">
+    <div className="overflow-hidden rounded-2xl border border-[#E8D5CE] bg-[#FFF8F6] shadow-sm">
+      {/* File Tabs & Actions */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E8D5CE] bg-white px-4 py-2.5">
         {/* File Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          {codeFiles.map((file, idx) => (
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          {files.map((file, idx) => (
             <button
               key={idx}
               onClick={() => setActiveFileIndex(idx)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-mono transition ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono transition ${
                 activeFileIndex === idx
-                  ? 'bg-stunning-500/20 text-stunning-300 border border-stunning-500/30'
-                  : 'text-surface-muted hover:text-white hover:bg-surface-hover'
+                  ? 'bg-[#4A2545] text-white shadow-sm font-bold'
+                  : 'text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFE9E2]'
               }`}
             >
-              <FileCode className="h-3.5 w-3.5" />
+              <FileCode className="h-3 w-3" />
               <span>{file.filename.split('/').pop()}</span>
             </button>
           ))}
         </div>
 
-        {/* Copy & Download Actions */}
-        <div className="flex items-center gap-2">
+        {/* Actions */}
+        <div className="flex items-center gap-1.5">
           <button
             onClick={handleDownload}
-            className="flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface px-2.5 py-1 text-xs text-gray-300 hover:text-white hover:border-gray-600 transition"
+            className="flex items-center gap-1 rounded-full border border-[#E8D5CE] bg-[#FFF8F6] px-2.5 py-1 text-xs font-sans font-medium text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFE9E2] transition shadow-sm"
           >
-            <Download className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Download File</span>
+            <Download className="h-3 w-3 text-[#4A2545]" />
+            <span className="hidden sm:inline">Download</span>
           </button>
 
           <button
             onClick={handleCopy}
-            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
+            className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-sans font-medium transition shadow-sm ${
               copied
-                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                : 'border-surface-border bg-surface text-gray-300 hover:text-white hover:border-gray-600'
+                ? 'border-[#A8B79A] bg-[#A8B79A]/20 text-[#2E4A28]'
+                : 'border-[#E8D5CE] bg-[#FFF8F6] text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFE9E2]'
             }`}
           >
             {copied ? (
               <>
-                <Check className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Copied!</span>
+                <Check className="h-3 w-3 text-[#2E4A28]" />
+                <span>Copied</span>
               </>
             ) : (
               <>
-                <Copy className="h-3.5 w-3.5" />
-                <span>Copy Code</span>
+                <Copy className="h-3 w-3 text-[#4A2545]" />
+                <span>Copy</span>
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* Code Editor Body */}
-      <div className="flex font-mono text-xs overflow-x-auto p-4 leading-relaxed max-h-[500px]">
+      {/* Path Breadcrumb */}
+      <div className="px-4 py-1.5 bg-[#FFF1EC] border-b border-[#E8D5CE] text-[11px] font-mono text-[#80747B] flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <FolderTree className="h-3.5 w-3.5 text-[#4A2545]" />
+          <span className="text-[#32102F] font-semibold">{currentFile.filename}</span>
+        </div>
+        <span className="text-[#80747B]">Next.js 15 TypeScript</span>
+      </div>
+
+      {/* Code Editor */}
+      <div className="flex font-mono text-xs overflow-x-auto p-4 leading-relaxed max-h-[460px] bg-white">
         {/* Line Numbers */}
-        <div className="select-none pr-4 text-right text-gray-600 border-r border-surface-border/50">
+        <div className="select-none pr-3.5 text-right text-[#A3928E] border-r border-[#E8D5CE] font-mono">
           {lines.map((_, i) => (
-            <div key={i}>{i + 1}</div>
+            <div key={i} className="leading-5">{i + 1}</div>
           ))}
         </div>
 
         {/* Code Content */}
-        <pre className="pl-4 text-gray-200 overflow-x-auto">
+        <pre className="pl-4 text-[#241915] overflow-x-auto leading-5 text-xs">
           <code>{currentFile.code}</code>
         </pre>
       </div>
