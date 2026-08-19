@@ -13,7 +13,8 @@ import {
   Download,
   AlertTriangle,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Cpu
 } from 'lucide-react';
 import LivePreview from './LivePreview';
 import ArchitectureView from './ArchitectureView';
@@ -49,15 +50,15 @@ export default function ResponseViewer({
   const [copiedRaw, setCopiedRaw] = useState(false);
   const tabContentRef = useRef<HTMLDivElement>(null);
 
-  // GSAP tab switch transition
+  // GSAP tab switch transition using autoAlpha and y transform
   useEffect(() => {
     if (tabContentRef.current) {
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (!prefersReducedMotion) {
         gsap.fromTo(
           tabContentRef.current,
-          { opacity: 0, y: 6 },
-          { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }
+          { autoAlpha: 0, y: 8 },
+          { autoAlpha: 1, y: 0, duration: 0.28, ease: 'power2.out', overwrite: 'auto' }
         );
       }
     }
@@ -97,7 +98,7 @@ export default function ResponseViewer({
   };
 
   return (
-    <div className="response-viewer-card w-full flex flex-col gap-3.5">
+    <div className="response-viewer-card w-full flex flex-col gap-4">
       {/* Error Recovery Alert Card */}
       {hasError && (
         <div className="rounded-2xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/20 p-4 flex items-center justify-between gap-3 shadow-sm">
@@ -120,18 +121,23 @@ export default function ResponseViewer({
         </div>
       )}
 
-      {/* Response Workspace Container */}
-      <div className="rounded-3xl border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFFFFF] dark:bg-[#14161B] p-5 sm:p-6 shadow-ballet-card dark:shadow-solaris-card transition-colors">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E8D5CE] dark:border-[#262A36] transition-colors">
+      {/* Response Workspace Container: Build A SaaS Studio */}
+      <div className="rounded-3xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FFFFFF] dark:bg-[#241A1F] p-5 sm:p-6 md:p-7 shadow-ballet-card dark:shadow-velvet-card transition-colors">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E5D5CF] dark:border-[#3D2E35] transition-colors">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#A8B79A] dark:bg-emerald-400" />
-              <h2 className="font-serif text-lg sm:text-xl font-bold text-[#32102F] dark:text-white tracking-tight transition-colors">
-                {appName || 'Synthesized Solution'}
-              </h2>
+            <div className="flex items-center gap-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#4A7A5E] dark:bg-[#7EBF96] animate-pulse" />
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-serif text-lg sm:text-xl font-bold text-[#2A1525] dark:text-[#F2EDE9] tracking-tight transition-colors">
+                  Build A SaaS Studio
+                </span>
+                <span className="rounded-full bg-[#F5EBE8] dark:bg-[#2D2025] px-3 py-0.5 font-sans text-xs font-semibold text-[#6B2D5B] dark:text-[#C98DB8] border border-[#E5D5CF] dark:border-[#3D2E35]">
+                  {appName || 'Synthesized Solution'}
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-[#4E444B] dark:text-[#94A3B8] mt-0.5 font-sans transition-colors">
-              <span className="text-[#4A2545] dark:text-amber-400 font-semibold">{selectedIntegrations.length} Active Services</span>
+            <p className="text-xs text-[#5A4550] dark:text-[#A89B9F] mt-1 font-sans transition-colors">
+              <span className="text-[#6B2D5B] dark:text-[#C98DB8] font-semibold">{selectedIntegrations.length} Active Services</span>
               {selectedIntegrations.length > 0 && ` (${selectedIntegrations.join(', ')})`}
             </p>
           </div>
@@ -140,28 +146,28 @@ export default function ResponseViewer({
           <div className="flex items-center gap-2">
             <button
               onClick={handleDownloadMarkdown}
-              className="flex items-center gap-1.5 rounded-full border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#1A1D24] px-3 py-1.5 text-xs font-sans font-medium text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFE9E2] dark:hover:bg-[#222630] transition shadow-sm"
+              className="flex items-center gap-1.5 rounded-full border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#2D2025] px-3.5 py-1.5 text-xs font-sans font-medium text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#F5EBE8] dark:hover:bg-[#3D2E35] transition shadow-sm"
             >
-              <Download className="h-3.5 w-3.5 text-[#4A2545] dark:text-amber-400" />
+              <Download className="h-3.5 w-3.5 text-[#6B2D5B] dark:text-[#C98DB8]" />
               <span className="hidden sm:inline">Export Spec (.md)</span>
             </button>
 
             <button
               onClick={handleCopyRaw}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-sans font-medium transition shadow-sm ${
+              className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-sans font-medium transition shadow-sm ${
                 copiedRaw
-                  ? 'border-[#A8B79A] dark:border-emerald-500/40 bg-[#A8B79A]/20 dark:bg-emerald-950/30 text-[#2E4A28] dark:text-emerald-300'
-                  : 'border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#1A1D24] text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFE9E2] dark:hover:bg-[#222630]'
+                  ? 'border-[#4A7A5E] dark:border-[#7EBF96]/40 bg-[#4A7A5E]/20 dark:bg-[#4A7A5E]/30 text-[#2E4A28] dark:text-[#96CCAA]'
+                  : 'border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#2D2025] text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#F5EBE8]'
               }`}
             >
               {copiedRaw ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-[#2E4A28] dark:text-emerald-400" />
+                  <Check className="h-3.5 w-3.5 text-[#2E4A28] dark:text-[#7EBF96]" />
                   <span>Copied</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-[#4A2545] dark:text-amber-400" />
+                  <Copy className="h-3.5 w-3.5 text-[#6B2D5B] dark:text-[#C98DB8]" />
                   <span>Copy</span>
                 </>
               )}
@@ -170,13 +176,13 @@ export default function ResponseViewer({
         </div>
 
         {/* 5-Studio Tab Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-3.5 border-b border-[#E8D5CE] dark:border-[#262A36] pb-3.5 scrollbar-none transition-colors">
+        <div className="flex items-center gap-2 overflow-x-auto pt-4 border-b border-[#E5D5CF] dark:border-[#3D2E35] pb-4 scrollbar-none transition-colors">
           <button
             onClick={() => setActiveTab('preview')}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
+            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'preview'
-                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
+                ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#FAF7F5] dark:hover:bg-[#2D2025]'
             }`}
           >
             <Smartphone className="h-3.5 w-3.5" />
@@ -186,10 +192,10 @@ export default function ResponseViewer({
 
           <button
             onClick={() => setActiveTab('architecture')}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
+            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'architecture'
-                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
+                ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#FAF7F5] dark:hover:bg-[#2D2025]'
             }`}
           >
             <Layers className="h-3.5 w-3.5" />
@@ -199,10 +205,10 @@ export default function ResponseViewer({
 
           <button
             onClick={() => setActiveTab('code')}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
+            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'code'
-                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
+                ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#FAF7F5] dark:hover:bg-[#2D2025]'
             }`}
           >
             <Code2 className="h-3.5 w-3.5" />
@@ -212,10 +218,10 @@ export default function ResponseViewer({
 
           <button
             onClick={() => setActiveTab('inspector')}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
+            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'inspector'
-                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
+                ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#FAF7F5] dark:hover:bg-[#2D2025]'
             }`}
           >
             <Terminal className="h-3.5 w-3.5" />
@@ -225,10 +231,10 @@ export default function ResponseViewer({
 
           <button
             onClick={() => setActiveTab('raw')}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
+            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'raw'
-                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
+                ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white hover:bg-[#FAF7F5] dark:hover:bg-[#2D2025]'
             }`}
           >
             <FileText className="h-3.5 w-3.5" />
@@ -238,7 +244,7 @@ export default function ResponseViewer({
         </div>
 
         {/* Studio Body Panes */}
-        <div ref={tabContentRef} className="pt-5">
+        <div ref={tabContentRef} className="pt-6">
           {activeTab === 'preview' && (
             <LivePreview
               appName={appName}
@@ -272,14 +278,14 @@ export default function ResponseViewer({
           )}
 
           {activeTab === 'raw' && (
-            <div className="overflow-hidden rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#090A0D] p-4 font-mono text-xs shadow-inner transition-colors">
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E8D5CE] dark:border-[#262A36] text-[#80747B] dark:text-[#94A3B8]">
+            <div className="overflow-hidden rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#1A1216] p-4 font-mono text-xs shadow-inner transition-colors">
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E5D5CF] dark:border-[#3D2E35] text-[#80747B] dark:text-[#A89B9F]">
                 <span>RAW STREAM OUTPUT</span>
-                <span className="text-[#2E4A28] dark:text-emerald-400 font-bold font-mono text-[11px] bg-[#A8B79A]/20 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+                <span className="text-[#2E4A28] dark:text-[#7EBF96] font-bold font-mono text-[11px] bg-[#4A7A5E]/20 dark:bg-[#4A7A5E]/30 px-2 py-0.5 rounded-full">
                   {isStreaming ? 'Streaming...' : 'Complete'}
                 </span>
               </div>
-              <pre className="text-[#241915] dark:text-gray-200 whitespace-pre-wrap leading-relaxed max-h-[500px] overflow-y-auto">
+              <pre className="text-[#1F1518] dark:text-[#F2EDE9] whitespace-pre-wrap leading-relaxed max-h-[500px] overflow-y-auto">
                 {streamingText || '// Waiting for response...'}
               </pre>
             </div>

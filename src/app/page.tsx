@@ -3,6 +3,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import confetti from 'canvas-confetti';
+import {
+  Layers,
+  ArrowRight,
+  ShieldCheck,
+  Server,
+  Zap,
+  Globe,
+  Database,
+  Cpu,
+  Sparkles,
+  ChevronDown
+} from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import PromptStudio from '@/components/PromptStudio';
@@ -27,7 +39,7 @@ export default function Home() {
   const [systemPrompt, setSystemPrompt] = useState<string>('');
   const [streamingText, setStreamingText] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [hasGenerated, setHasGenerated] = useState<boolean>(true);
+  const [hasGenerated, setHasGenerated] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
   const [mockResult, setMockResult] = useState<any>(null);
   const [injectedMetadata, setInjectedMetadata] = useState<any>(null);
@@ -39,13 +51,20 @@ export default function Home() {
   const [provider, setProvider] = useState<'gemini' | 'openai'>('gemini');
 
   const abortControllerRef = useRef<AbortController | null>(null);
-  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const mainScopeRef = useRef<HTMLDivElement>(null);
+  const studioSectionRef = useRef<HTMLDivElement>(null);
 
-  // Initialize theme from DOM / localStorage
+  // Initialize theme from localStorage (Light mode is the default)
   useEffect(() => {
     try {
-      const isDark = document.documentElement.classList.contains('dark');
-      setTheme(isDark ? 'dark' : 'light');
+      const storedTheme = localStorage.getItem('stunning_theme');
+      if (storedTheme === 'dark') {
+        setTheme('dark');
+        document.documentElement.classList.add('dark');
+      } else {
+        setTheme('light');
+        document.documentElement.classList.remove('dark');
+      }
 
       const storedKey = localStorage.getItem('stunning_api_key');
       const storedProv = localStorage.getItem('stunning_provider') as 'gemini' | 'openai';
@@ -60,18 +79,50 @@ export default function Home() {
     const activeIntegrationsList = AVAILABLE_INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
     const initialMock = generateSmartMockResponse(prompt, activeIntegrationsList);
     setMockResult(initialMock);
-    setStreamingText(initialMock.markdownContent);
 
-    // GSAP Choreographed Entrance Animation
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReducedMotion && mainContainerRef.current) {
-      const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.6 } });
-      tl.from('.hero-content', { opacity: 0, y: 16, delay: 0.1 })
-        .from('.hero-presets', { opacity: 0, y: 12 }, '-=0.3')
-        .from('.prompt-studio-card', { opacity: 0, y: 20 }, '-=0.3')
-        .from('.response-viewer-card', { opacity: 0, y: 20 }, '-=0.4');
-    }
+    // Enhanced GSAP matchMedia entrance choreography
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        reduceMotion: '(prefers-reduced-motion: reduce)',
+        all: '(min-width: 0px)'
+      },
+      (context) => {
+        const { reduceMotion } = context.conditions as any;
+        if (!reduceMotion && mainScopeRef.current) {
+          const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.55 } });
+          tl.from('.hero-badge', { autoAlpha: 0, y: -10, duration: 0.4 })
+            .from('.hero-title', { autoAlpha: 0, y: 15, duration: 0.5 }, '-=0.2')
+            .from('.hero-subtitle', { autoAlpha: 0, y: 12, duration: 0.4 }, '-=0.25')
+            .from('.hero-preset-item', { autoAlpha: 0, y: 10, stagger: 0.05, duration: 0.35 }, '-=0.2')
+            .from('.prompt-studio-card', { autoAlpha: 0, y: 20, duration: 0.5 }, '-=0.25')
+            .from('.integration-pill-item', { autoAlpha: 0, scale: 0.95, stagger: 0.04, duration: 0.4 }, '-=0.3')
+            .from('.architecture-preview-dock', { autoAlpha: 0, y: 20, duration: 0.5 }, '-=0.2');
+        }
+      },
+      mainScopeRef
+    );
+
+    return () => mm.revert();
   }, []);
+
+  // GSAP animation when Studio mounts upon user generation
+  useEffect(() => {
+    if ((hasGenerated || isGenerating) && studioSectionRef.current) {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!prefersReducedMotion) {
+        gsap.fromTo(
+          studioSectionRef.current,
+          { autoAlpha: 0, y: 30 },
+          { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out', overwrite: 'auto' }
+        );
+      }
+      // Smooth scroll to studio
+      setTimeout(() => {
+        studioSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [hasGenerated, isGenerating]);
 
   const handleToggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -223,9 +274,10 @@ export default function Home() {
   };
 
   const appName = mockResult?.title || (prompt.split(' ')[0] ? `${prompt.split(' ').slice(0, 3).join(' ')} Platform` : 'Stunning Platform');
+  const activeIntegrations = AVAILABLE_INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors duration-200">
+    <div ref={mainScopeRef} className="flex min-h-screen flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors duration-200">
       {/* Navbar with Theme Switcher */}
       <Navbar
         onOpenApiKeyModal={() => setApiKeyModalOpen(true)}
@@ -235,27 +287,105 @@ export default function Home() {
         onToggleTheme={handleToggleTheme}
       />
 
-      {/* Main Split Console */}
-      <main ref={mainContainerRef} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6">
+      {/* Main Console Workspace - Full Vertical Layout */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-4 space-y-6">
+        {/* Top: Hero Section */}
         <Hero onSelectPreset={handleSelectPreset} />
 
-        {/* Split Workstation: Left Input Deck | Right Studio Hub */}
-        <div className="mt-5 pb-16 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column (5 Cols on LG): Input Deck */}
-          <div className="lg:col-span-5 sticky lg:top-20">
-            <PromptStudio
-              prompt={prompt}
-              setPrompt={setPrompt}
-              selectedIntegrations={selectedIntegrations}
-              setSelectedIntegrations={setSelectedIntegrations}
-              onSubmit={handleSubmit}
-              onCancel={handleCancelGeneration}
-              isLoading={isGenerating}
-            />
-          </div>
+        {/* Middle: Full-Width Prompt Studio */}
+        <div className="w-full">
+          <PromptStudio
+            prompt={prompt}
+            setPrompt={setPrompt}
+            selectedIntegrations={selectedIntegrations}
+            setSelectedIntegrations={setSelectedIntegrations}
+            onSubmit={handleSubmit}
+            onCancel={handleCancelGeneration}
+            isLoading={isGenerating}
+          />
+        </div>
 
-          {/* Right Column (7 Cols on LG): Response & Live Studio */}
-          <div className="lg:col-span-7">
+        {/* Bottom Section:
+            State A (Pre-submission): Architecture Preview Dock
+            State B (Post-submission): Full-Width "Build A SaaS Studio" Workspace
+        */}
+        {!hasGenerated && !isGenerating ? (
+          <div className="architecture-preview-dock rounded-3xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FFFFFF] dark:bg-[#241A1F] p-5 sm:p-6 shadow-ballet-card dark:shadow-velvet-card transition-colors">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E5D5CF] dark:border-[#3D2E35]">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5EBE8] dark:bg-[#2D2025] text-[#6B2D5B] dark:text-[#C98DB8] border border-[#E5D5CF] dark:border-[#3D2E35]">
+                  <Layers className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-[#2A1525] dark:text-[#F2EDE9]">
+                    Next.js 15 Synthesis Engine Architecture
+                  </h3>
+                  <p className="text-xs text-[#80747B] dark:text-[#A89B9F] font-sans">
+                    Ready to synthesize full-stack route handlers, schema injection, and interactive sandbox
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={!prompt.trim()}
+                className="flex items-center gap-1.5 rounded-full bg-[#6B2D5B] dark:bg-[#C98DB8] hover:bg-[#2A1525] dark:hover:bg-[#B07AA5] px-4 py-1.5 text-xs font-sans font-semibold text-white dark:text-[#1A1216] transition shadow-sm"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Launch Studio</span>
+              </button>
+            </div>
+
+            {/* 4 Tiers Summary */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#1F161B] p-3.5">
+                <div className="flex items-center justify-between text-[10px] text-[#80747B] dark:text-[#A89B9F] font-mono">
+                  <span className="font-bold text-[#2A1525] dark:text-[#F2EDE9]">Tier 1</span>
+                  <Globe className="h-3.5 w-3.5" />
+                </div>
+                <h4 className="mt-1 font-serif text-xs font-bold text-[#2A1525] dark:text-[#F2EDE9]">Edge Client</h4>
+                <p className="mt-1 text-[11px] text-[#5A4550] dark:text-[#A89B9F] leading-tight font-sans">
+                  React 19 Server/Client UI with live SSE listeners.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#1F161B] p-3.5">
+                <div className="flex items-center justify-between text-[10px] text-[#80747B] dark:text-[#A89B9F] font-mono">
+                  <span className="font-bold text-[#2A1525] dark:text-[#F2EDE9]">Tier 2</span>
+                  <Server className="h-3.5 w-3.5" />
+                </div>
+                <h4 className="mt-1 font-serif text-xs font-bold text-[#2A1525] dark:text-[#F2EDE9]">Route Handlers</h4>
+                <p className="mt-1 text-[11px] text-[#5A4550] dark:text-[#A89B9F] leading-tight font-sans">
+                  Zod validated Server Actions & central dispatcher.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-[#D4764E] dark:border-[#C98DB8]/40 bg-[#F5EBE8] dark:bg-[#6B2D5B]/20 p-3.5">
+                <div className="flex items-center justify-between text-[10px] text-[#6B2D5B] dark:text-[#C98DB8] font-mono">
+                  <span className="font-bold">Tier 3</span>
+                  <Zap className="h-3.5 w-3.5" />
+                </div>
+                <h4 className="mt-1 font-serif text-xs font-bold text-[#2A1525] dark:text-[#F2EDE9]">Injected Services</h4>
+                <p className="mt-1 text-[11px] text-[#5A4550] dark:text-[#E8996E] leading-tight font-sans truncate">
+                  {activeIntegrations.length > 0 ? activeIntegrations.map(i => i.name).join(', ') : 'Standalone app'}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#1F161B] p-3.5">
+                <div className="flex items-center justify-between text-[10px] text-[#80747B] dark:text-[#A89B9F] font-mono">
+                  <span className="font-bold text-[#2A1525] dark:text-[#F2EDE9]">Tier 4</span>
+                  <Cpu className="h-3.5 w-3.5" />
+                </div>
+                <h4 className="mt-1 font-serif text-xs font-bold text-[#2A1525] dark:text-[#F2EDE9]">Telemetry & DB</h4>
+                <p className="mt-1 text-[11px] text-[#5A4550] dark:text-[#A89B9F] leading-tight font-sans">
+                  Structured audit logging & telemetry traces.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Build A SaaS Studio (Full Vertical View) */
+          <div ref={studioSectionRef} className="w-full pb-16">
             <ResponseViewer
               appName={appName}
               userPrompt={prompt}
@@ -269,31 +399,31 @@ export default function Home() {
               hasError={hasError}
             />
           </div>
-        </div>
+        )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF1EC] dark:bg-[#101217] py-6 text-xs text-[#80747B] dark:text-[#94A3B8] font-sans transition-colors">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-[#E5D5CF] dark:border-[#3D2E35] bg-[#F5EBE8] dark:bg-[#140E11] py-6 text-xs text-[#80747B] dark:text-[#A89B9F] font-sans transition-colors">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-serif font-bold text-[#32102F] dark:text-white">Stunning Studio</span>
-            <span className="text-[#E8D5CE] dark:text-[#262A36]">•</span>
-            <span className="text-[#4A2545] dark:text-amber-400 font-medium">
-              {theme === 'dark' ? 'Solaris Precision (Dark)' : 'Digital Choreography (Light)'}
+            <span className="font-serif font-bold text-[#2A1525] dark:text-white">Stunning Studio</span>
+            <span className="text-[#E5D5CF] dark:text-[#3D2E35]">•</span>
+            <span className="text-[#6B2D5B] dark:text-[#C98DB8] font-medium">
+              {theme === 'dark' ? 'Velvet Terminal (Dark)' : 'Digital Choreography (Light Default)'}
             </span>
           </div>
 
           <div className="flex items-center gap-4 text-xs font-sans">
             <button
               onClick={() => setDocModalType('decisions')}
-              className="text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white transition"
+              className="text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white transition"
             >
               DECISIONS.md (Part 2)
             </button>
-            <span className="text-[#E8D5CE] dark:text-[#262A36]">•</span>
+            <span className="text-[#E5D5CF] dark:text-[#3D2E35]">•</span>
             <button
               onClick={() => setDocModalType('tech')}
-              className="text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white transition"
+              className="text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white transition"
             >
               TECH.md (Part 3 MCP)
             </button>

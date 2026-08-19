@@ -1,47 +1,48 @@
 ---
-name: Digital Choreography
+name: Digital Choreography & Velvet Terminal
 colors:
-  surface: '#FFF8F6'
-  surface-dim: '#EBD6CF'
-  surface-bright: '#FFF8F6'
+  surface: '#FAF7F5'
+  surface-dim: '#EBD8D3'
+  surface-bright: '#FAF7F5'
   surface-container-lowest: '#FFFFFF'
-  surface-container-low: '#FFF1EC'
-  surface-container: '#FFE9E2'
-  surface-container-high: '#F9E4DC'
-  surface-container-highest: '#F3DED7'
-  on-surface: '#241915'
-  on-surface-variant: '#4E444B'
-  inverse-surface: '#3A2E29'
-  inverse-on-surface: '#FFEDE7'
+  surface-container-low: '#F5EBE8'
+  surface-container: '#F5EBE8'
+  surface-container-high: '#F0E2DE'
+  surface-container-highest: '#EBD8D3'
+  on-surface: '#1F1518'
+  on-surface-variant: '#5A4550'
+  inverse-surface: '#1A1216'
+  inverse-on-surface: '#F2EDE9'
   outline: '#80747B'
-  outline-variant: '#D1C3CB'
-  surface-tint: '#7B5073'
-  primary: '#32102F'
+  outline-variant: '#E5D5CF'
+  surface-tint: '#6B2D5B'
+  primary: '#6B2D5B'
   on-primary: '#FFFFFF'
-  primary-container: '#4A2545'
-  on-primary-container: '#BC8BB1'
-  inverse-primary: '#EBB7DF'
-  secondary: '#7E5450'
+  primary-container: '#F5EBE8'
+  on-primary-container: '#2A1525'
+  secondary: '#D4764E'
   on-secondary: '#FFFFFF'
-  secondary-container: '#FFC7C2'
+  secondary-container: '#FCEEED'
   on-secondary-container: '#7A514D'
-  tertiary: '#271A17'
+  tertiary: '#4A7A5E'
   on-tertiary: '#FFFFFF'
-  tertiary-container: '#3D2F2B'
-  on-tertiary-container: '#AB9691'
+  tertiary-container: '#D1E0C4'
+  on-tertiary-container: '#1D3019'
   error: '#BA1A1A'
   on-error: '#FFFFFF'
   error-container: '#FFDAD6'
   on-error-container: '#93000A'
-  background: '#FFF8F6'
-  on-background: '#241915'
-  surface-variant: '#F3DED7'
-  accent-plum: '#4A2545'
-  accent-rose: '#D9A5A0'
-  accent-blush: '#FFE9E2'
-  accent-sage: '#A8B79A'
-  border-subtle: '#E8D5CE'
-  border-focus: '#4A2545'
+  background: '#FAF7F5'
+  on-background: '#1F1518'
+  surface-variant: '#EBD8D3'
+  dark-background: '#1A1216'
+  dark-surface-card: '#241A1F'
+  dark-surface-control: '#2D2025'
+  dark-border: '#3D2E35'
+  dark-border-hover: '#5A4550'
+  dark-accent-orchid: '#C98DB8'
+  dark-accent-copper: '#E8996E'
+  dark-accent-fern: '#7EBF96'
 typography:
   display-hero:
     fontFamily: Playfair Display
@@ -118,21 +119,36 @@ spacing:
   unit-8: 32px
   unit-12: 48px
   unit-16: 64px
-  container-max: 1360px
+  container-max: 1100px
 ---
 
-## Brand & Style: Digital Choreography (Ballet Aesthetic)
+## Full Vertical Stack Architecture & Velvet Terminal Dark Theme
 
-**Digital Choreography** translates the precision, fluidity, and grace of ballet into a functional AI application studio. It embraces **Editorial Minimalism** with **Tactile Softness**, replacing dark technical grids with a warm, inviting porcelain canvas and deep plum typography.
+### 1. Vertical Progressive Disclosure Workflow
+- **Pre-Submission Initial State**:
+  - The **"Build A SaaS Studio"** workspace is cleanly hidden.
+  - The UI is presented as a high-focus vertical workbench (`max-w-5xl mx-auto`):
+    - **Hero Section**: Editorial headline, elevator pitch, and preset inspiration pills.
+    - **Prompt Studio**: Full-width input deck with 6 service integration cards, specification canvas, and synthesis action bar.
+    - **Architecture Preview Dock**: Structural preview of the 4-tier pipeline ready to be dispatched.
+- **Active / Generated State**:
+  - When the user clicks "Synthesize App" (or presses `⌘+Enter`), the **"Build A SaaS Studio"** (`ResponseViewer`) mounts vertically beneath the Prompt Studio with smooth GSAP autoAlpha/y transition and auto-scrolls into view.
+  - Houses the 5 unified sub-studios in a wide, expansive canvas:
+    1. **Interactive Sandbox**
+    2. **Architecture & Flow**
+    3. **Production Code**
+    4. **System Prompt**
+    5. **Raw Markdown**
 
-### Core Palette:
-- **Warm Porcelain Ground (`#FFF8F6`)**: Softer than pure white, gentle on the eyes.
-- **Deep Plum Prima (`#32102F` / `#4A2545`)**: Grounding headline and high-priority button color.
-- **Dusty Rose & Soft Blush (`#D9A5A0` / `#FFE9E2`)**: Ambient card containers and active selections.
-- **Muted Taupe (`#80747B`)**: Subtle borders, metadata, and helper text.
-- **Soft Sage (`#A8B79A`)**: Live system status and success indicators.
+### 2. Default Light Mode: Digital Choreography (Warm Stone & Orchid)
+- **Ground (`#FAF7F5`)**: Warm stone parchment.
+- **Surfaces (`#FFFFFF` / `#F5EBE8`)**: Clean cards with warm blush borders (`#E5D5CF`).
+- **Typography (`#2A1525` / `#6B2D5B`)**: Deep plum editorial headlines in *Playfair Display* and UI copy in *Sora*.
+- **Accents (`#D4764E` Burnt Sienna & `#4A7A5E` Forest Fern)**: Warm sienna accents and status badges.
 
-### Typography:
-- **Playfair Display**: Classical editorial display headlines with italic accents.
-- **Sora**: Geometric, airy, and soft for UI body copy and button controls.
-- **JetBrains Mono**: High-precision monospace for code, endpoints, and schemas.
+### 3. Unified Dark Mode: Velvet Terminal (Harmonious Companion)
+- **Shared Hue DNA**: Dark mode colors share the exact same hue spectrum as light mode, preserving visual harmony across theme switches.
+- **Ground (`#1A1216`)**: Deep velvet wine ground (never cold blue-gray).
+- **Surfaces (`#241A1F` / `#2D2025`)**: Warm wine cards with plum borders (`#3D2E35` / `#5A4550`) and soft orchid specular highlights.
+- **Typography (`#F2EDE9`)**: Warm ivory headlines and soft taupe-rose descriptions (`#A89B9F`).
+- **Accents (`#C98DB8` Soft Orchid, `#E8996E` Copper, `#7EBF96` Mint Fern)**: Luminance-lifted companion colors sharing hue identity with their light counterparts.

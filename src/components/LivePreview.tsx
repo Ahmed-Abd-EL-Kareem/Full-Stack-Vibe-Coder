@@ -77,35 +77,35 @@ export default function LivePreview({
   return (
     <div className="flex flex-col gap-3">
       {/* Browser Chrome Container */}
-      <div className="overflow-hidden rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFFFFF] dark:bg-[#14161B] shadow-sm transition-colors">
+      <div className="overflow-hidden rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FFFFFF] dark:bg-[#241A1F] shadow-sm transition-colors">
         {/* Browser Top Bar */}
-        <div className="flex flex-wrap items-center justify-between border-b border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#101217] px-4 py-2.5 gap-2 transition-colors">
+        <div className="flex flex-wrap items-center justify-between border-b border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#1F161B] px-4 py-2.5 gap-2 transition-colors">
           {/* Traffic dots and Viewports */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#E8D5CE] dark:bg-[#383E4F]" />
-              <div className="h-2.5 w-2.5 rounded-full bg-[#E8D5CE] dark:bg-[#383E4F]" />
-              <div className="h-2.5 w-2.5 rounded-full bg-[#E8D5CE] dark:bg-[#383E4F]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-[#E5D5CF] dark:bg-[#5A4550]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-[#E5D5CF] dark:bg-[#5A4550]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-[#E5D5CF] dark:bg-[#5A4550]" />
             </div>
 
-            <div className="hidden sm:flex items-center gap-1 pl-2 border-l border-[#E8D5CE] dark:border-[#262A36]">
+            <div className="hidden sm:flex items-center gap-1 pl-2 border-l border-[#E5D5CF] dark:border-[#3D2E35]">
               <button
                 onClick={() => setViewportMode('desktop')}
-                className={`p-1 rounded-md transition ${viewportMode === 'desktop' ? 'bg-[#FFE9E2] dark:bg-[#1A1D24] text-[#4A2545] dark:text-white' : 'text-[#80747B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white'}`}
+                className={`p-1 rounded-md transition ${viewportMode === 'desktop' ? 'bg-[#F5EBE8] dark:bg-[#2D2025] text-[#6B2D5B] dark:text-[#F2EDE9]' : 'text-[#80747B] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-[#F2EDE9]'}`}
                 title="Desktop"
               >
                 <Monitor className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setViewportMode('tablet')}
-                className={`p-1 rounded-md transition ${viewportMode === 'tablet' ? 'bg-[#FFE9E2] dark:bg-[#1A1D24] text-[#4A2545] dark:text-white' : 'text-[#80747B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white'}`}
+                className={`p-1 rounded-md transition ${viewportMode === 'tablet' ? 'bg-[#F5EBE8] dark:bg-[#2D2025] text-[#6B2D5B] dark:text-[#F2EDE9]' : 'text-[#80747B] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-[#F2EDE9]'}`}
                 title="Tablet"
               >
                 <Tablet className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setViewportMode('mobile')}
-                className={`p-1 rounded-md transition ${viewportMode === 'mobile' ? 'bg-[#FFE9E2] dark:bg-[#1A1D24] text-[#4A2545] dark:text-white' : 'text-[#80747B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white'}`}
+                className={`p-1 rounded-md transition ${viewportMode === 'mobile' ? 'bg-[#F5EBE8] dark:bg-[#2D2025] text-[#6B2D5B] dark:text-[#F2EDE9]' : 'text-[#80747B] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-[#F2EDE9]'}`}
                 title="Mobile"
               >
                 <Smartphone className="h-3.5 w-3.5" />
@@ -114,34 +114,34 @@ export default function LivePreview({
           </div>
 
           {/* URL Address */}
-          <div className="flex items-center gap-1.5 rounded-full border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#0D0E11] px-3 py-1 text-xs text-[#80747B] dark:text-[#94A3B8] max-w-xs truncate font-mono shadow-inner transition-colors">
-            <Lock className="h-3 w-3 text-[#A8B79A] dark:text-emerald-400 shrink-0" />
-            <span className="text-[#32102F] dark:text-white text-[11px] truncate font-medium">
+          <div className="flex items-center gap-1.5 rounded-full border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#1A1216] px-3 py-1 text-xs text-[#80747B] dark:text-[#A89B9F] max-w-xs truncate font-mono shadow-inner transition-colors">
+            <Lock className="h-3 w-3 text-[#4A7A5E] dark:text-[#7EBF96] shrink-0" />
+            <span className="text-[#2A1525] dark:text-[#F2EDE9] text-[11px] truncate font-medium">
               {(appName || 'app').toLowerCase().replace(/[^a-z0-9]/g, '-')}.stunning.live
             </span>
           </div>
 
           {/* Live Badge */}
-          <div className="flex items-center gap-1.5 rounded-full bg-[#A8B79A]/20 dark:bg-emerald-950/40 px-2.5 py-0.5 text-[10px] font-sans font-bold text-[#2E4A28] dark:text-emerald-300 border border-transparent dark:border-emerald-500/20">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#A8B79A] dark:bg-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-1.5 rounded-full bg-[#4A7A5E]/20 dark:bg-[#4A7A5E]/30 px-2.5 py-0.5 text-[10px] font-sans font-bold text-[#2E4A28] dark:text-[#96CCAA] border border-transparent dark:border-[#7EBF96]/30">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#4A7A5E] dark:bg-[#7EBF96] animate-pulse" />
             <span>Interactive Sandbox</span>
           </div>
         </div>
 
         {/* Browser Inner Workspace */}
         <div
-          className={`mx-auto p-5 sm:p-6 bg-[#FFF8F6] dark:bg-[#090A0D] min-h-[380px] transition-all duration-200 ${
-            viewportMode === 'tablet' ? 'max-w-xl border-x border-[#E8D5CE] dark:border-[#262A36]' :
-            viewportMode === 'mobile' ? 'max-w-xs border-x border-[#E8D5CE] dark:border-[#262A36]' : 'w-full'
+          className={`mx-auto p-5 sm:p-6 bg-[#FAF7F5] dark:bg-[#1A1216] min-h-[380px] transition-all duration-200 ${
+            viewportMode === 'tablet' ? 'max-w-xl border-x border-[#E5D5CF] dark:border-[#3D2E35]' :
+            viewportMode === 'mobile' ? 'max-w-xs border-x border-[#E5D5CF] dark:border-[#3D2E35]' : 'w-full'
           }`}
         >
           {/* App Header */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E8D5CE] dark:border-[#262A36] transition-colors">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E5D5CF] dark:border-[#3D2E35] transition-colors">
             <div>
-              <h3 className="font-serif text-lg sm:text-xl font-bold text-[#32102F] dark:text-white tracking-tight transition-colors">
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-[#2A1525] dark:text-[#F2EDE9] tracking-tight transition-colors">
                 {appName || 'Generated Application'}
               </h3>
-              <p className="text-xs text-[#4E444B] dark:text-[#94A3B8] mt-0.5 max-w-md font-sans transition-colors">
+              <p className="text-xs text-[#5A4550] dark:text-[#A89B9F] mt-0.5 max-w-md font-sans transition-colors">
                 {userPrompt || 'Interactive full-stack application prototype.'}
               </p>
             </div>
@@ -149,7 +149,7 @@ export default function LivePreview({
             <button
               onClick={() => handleSimulateAction('all')}
               disabled={isSimulating}
-              className="flex items-center gap-1.5 rounded-full bg-[#4A2545] dark:bg-amber-500 hover:bg-[#32102F] dark:hover:bg-amber-600 px-4 py-1.5 text-xs font-sans font-semibold text-white dark:text-[#0D0E11] transition shadow-sm disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-full bg-[#6B2D5B] dark:bg-[#C98DB8] hover:bg-[#2A1525] dark:hover:bg-[#B07AA5] px-4 py-1.5 text-xs font-sans font-semibold text-white dark:text-[#1A1216] transition shadow-sm disabled:opacity-50"
             >
               <Zap className="h-3.5 w-3.5 fill-current" />
               <span>{isSimulating ? 'Running...' : 'Dispatch Pipeline'}</span>
@@ -157,13 +157,13 @@ export default function LivePreview({
           </div>
 
           {/* Sub-Tabs */}
-          <div className="flex items-center gap-1.5 pt-3.5 pb-4 border-b border-[#E8D5CE] dark:border-[#262A36] transition-colors">
+          <div className="flex items-center gap-1.5 pt-3.5 pb-4 border-b border-[#E5D5CF] dark:border-[#3D2E35] transition-colors">
             <button
               onClick={() => setActiveSubTab('dashboard')}
               className={`rounded-full px-3 py-1 text-xs font-sans font-medium transition ${
                 activeSubTab === 'dashboard'
-                  ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                  : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white'
+                  ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                  : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white'
               }`}
             >
               Overview
@@ -172,8 +172,8 @@ export default function LivePreview({
               onClick={() => setActiveSubTab('integrations')}
               className={`rounded-full px-3 py-1 text-xs font-sans font-medium transition ${
                 activeSubTab === 'integrations'
-                  ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                  : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white'
+                  ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                  : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white'
               }`}
             >
               Services ({activeIntegrations.length})
@@ -182,8 +182,8 @@ export default function LivePreview({
               onClick={() => setActiveSubTab('logs')}
               className={`rounded-full px-3 py-1 text-xs font-sans font-medium transition ${
                 activeSubTab === 'logs'
-                  ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
-                  : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white'
+                  ? 'bg-[#6B2D5B] dark:bg-[#C98DB8] text-white dark:text-[#1A1216] font-semibold shadow-sm'
+                  : 'text-[#5A4550] dark:text-[#A89B9F] hover:text-[#2A1525] dark:hover:text-white'
               }`}
             >
               Live Feed ({logs.length})
@@ -195,49 +195,49 @@ export default function LivePreview({
             <div className="space-y-4 pt-1">
               {/* Metrics Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#14161B] p-3.5 shadow-sm transition-colors">
-                  <div className="flex items-center justify-between text-xs text-[#80747B] dark:text-[#94A3B8] font-sans">
+                <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#241A1F] p-3.5 shadow-sm dark:shadow-velvet-card transition-colors">
+                  <div className="flex items-center justify-between text-xs text-[#80747B] dark:text-[#A89B9F] font-sans">
                     <span>Connected Services</span>
-                    <Activity className="h-3.5 w-3.5 text-[#4A2545] dark:text-amber-400" />
+                    <Activity className="h-3.5 w-3.5 text-[#6B2D5B] dark:text-[#C98DB8]" />
                   </div>
                   <div className="mt-1.5 flex items-baseline gap-2">
-                    <span className="font-serif text-2xl font-bold text-[#32102F] dark:text-white">{activeIntegrations.length}</span>
-                    <span className="text-xs text-[#2E4A28] dark:text-emerald-400 font-semibold">Active</span>
+                    <span className="font-serif text-2xl font-bold text-[#2A1525] dark:text-[#F2EDE9]">{activeIntegrations.length}</span>
+                    <span className="text-xs text-[#2E4A28] dark:text-[#7EBF96] font-semibold">Active</span>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#14161B] p-3.5 shadow-sm transition-colors">
-                  <div className="flex items-center justify-between text-xs text-[#80747B] dark:text-[#94A3B8] font-sans">
+                <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#241A1F] p-3.5 shadow-sm dark:shadow-velvet-card transition-colors">
+                  <div className="flex items-center justify-between text-xs text-[#80747B] dark:text-[#A89B9F] font-sans">
                     <span>Latency</span>
-                    <Server className="h-3.5 w-3.5 text-[#80747B] dark:text-[#94A3B8]" />
+                    <Server className="h-3.5 w-3.5 text-[#80747B] dark:text-[#A89B9F]" />
                   </div>
                   <div className="mt-1.5 flex items-baseline gap-2">
-                    <span className="font-serif text-2xl font-bold text-[#32102F] dark:text-white">24ms</span>
-                    <span className="text-xs text-[#80747B] dark:text-[#64748B]">Edge</span>
+                    <span className="font-serif text-2xl font-bold text-[#2A1525] dark:text-[#F2EDE9]">24ms</span>
+                    <span className="text-xs text-[#80747B] dark:text-[#7A6B70]">Edge</span>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#14161B] p-3.5 shadow-sm transition-colors">
-                  <div className="flex items-center justify-between text-xs text-[#80747B] dark:text-[#94A3B8] font-sans">
+                <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#241A1F] p-3.5 shadow-sm dark:shadow-velvet-card transition-colors">
+                  <div className="flex items-center justify-between text-xs text-[#80747B] dark:text-[#A89B9F] font-sans">
                     <span>Security Model</span>
-                    <ShieldCheck className="h-3.5 w-3.5 text-[#A8B79A] dark:text-emerald-400" />
+                    <ShieldCheck className="h-3.5 w-3.5 text-[#4A7A5E] dark:text-[#7EBF96]" />
                   </div>
                   <div className="mt-1.5 flex items-baseline gap-2">
-                    <span className="font-serif text-lg font-bold text-[#32102F] dark:text-white">HMAC</span>
-                    <span className="text-xs text-[#2E4A28] dark:text-emerald-400 font-semibold">Verified</span>
+                    <span className="font-serif text-lg font-bold text-[#2A1525] dark:text-[#F2EDE9]">HMAC</span>
+                    <span className="text-xs text-[#2E4A28] dark:text-[#7EBF96] font-semibold">Verified</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Cards */}
-              <div className="rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#14161B] p-4 shadow-sm transition-colors">
-                <h4 className="text-xs font-serif font-bold uppercase tracking-wider text-[#32102F] dark:text-white mb-3">
+              <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#241A1F] p-4 shadow-sm dark:shadow-velvet-card transition-colors">
+                <h4 className="text-xs font-serif font-bold uppercase tracking-wider text-[#2A1525] dark:text-[#F2EDE9] mb-3">
                   Simulated Endpoints
                 </h4>
 
                 {activeIntegrations.length === 0 ? (
-                  <p className="text-xs text-[#80747B] dark:text-[#94A3B8] italic py-1 font-sans">
-                    No external services selected. Select Stripe, Shopify, Gmail, Slack, or Sheets in the left deck.
+                  <p className="text-xs text-[#80747B] dark:text-[#A89B9F] italic py-1 font-sans">
+                    No external services selected. Select Stripe, Shopify, Gmail, Slack, or Sheets in the prompt deck.
                   </p>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -246,17 +246,17 @@ export default function LivePreview({
                         key={integration.id}
                         onClick={() => handleSimulateAction(integration.id)}
                         disabled={isSimulating}
-                        className="flex items-center justify-between gap-2.5 rounded-xl border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#101217] p-3 text-left hover:border-[#D9A5A0] dark:hover:border-amber-500/40 hover:bg-[#FFE9E2] dark:hover:bg-[#1A1D24] transition group shadow-sm"
+                        className="flex items-center justify-between gap-2.5 rounded-xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-[#FAF7F5] dark:bg-[#1F161B] p-3 text-left hover:border-[#D4764E] dark:hover:border-[#C98DB8]/40 hover:bg-[#F5EBE8] dark:hover:bg-[#2D2025] transition group shadow-sm"
                       >
                         <div className="truncate">
-                          <div className="text-xs font-semibold text-[#32102F] dark:text-white group-hover:text-[#4A2545] dark:group-hover:text-amber-400 transition">
+                          <div className="text-xs font-semibold text-[#2A1525] dark:text-[#F2EDE9] group-hover:text-[#6B2D5B] dark:group-hover:text-[#C98DB8] transition">
                             Trigger {integration.name}
                           </div>
-                          <div className="text-[11px] text-[#80747B] dark:text-[#64748B] truncate font-mono mt-0.5">
+                          <div className="text-[11px] text-[#80747B] dark:text-[#7A6B70] truncate font-mono mt-0.5">
                             {integration.systemContext.apiEndpoints[0]}
                           </div>
                         </div>
-                        <ArrowRight className="h-3.5 w-3.5 text-[#80747B] dark:text-[#94A3B8] group-hover:text-[#4A2545] dark:group-hover:text-white transition" />
+                        <ArrowRight className="h-3.5 w-3.5 text-[#80747B] dark:text-[#A89B9F] group-hover:text-[#6B2D5B] dark:group-hover:text-white transition" />
                       </button>
                     ))}
                   </div>
@@ -269,15 +269,15 @@ export default function LivePreview({
           {activeSubTab === 'integrations' && (
             <div className="grid grid-cols-1 gap-3 pt-1">
               {activeIntegrations.map(integration => (
-                <div key={integration.id} className="rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#14161B] p-4 shadow-sm transition-colors">
-                  <div className="flex items-center justify-between pb-2 border-b border-[#E8D5CE] dark:border-[#262A36]">
-                    <span className="font-serif font-bold text-sm text-[#32102F] dark:text-white">{integration.name}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FFE9E2] dark:bg-[#222630] text-[#4A2545] dark:text-amber-300 font-bold">
+                <div key={integration.id} className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#241A1F] p-4 shadow-sm dark:shadow-velvet-card transition-colors">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#E5D5CF] dark:border-[#3D2E35]">
+                    <span className="font-serif font-bold text-sm text-[#2A1525] dark:text-[#F2EDE9]">{integration.name}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F5EBE8] dark:bg-[#3D2E35] text-[#6B2D5B] dark:text-[#D4A3C8] font-bold">
                       {integration.category}
                     </span>
                   </div>
-                  <p className="text-xs text-[#4E444B] dark:text-[#94A3B8] mt-2 leading-relaxed font-sans">{integration.systemContext.role}</p>
-                  <div className="mt-2.5 text-[11px] font-mono text-[#4A2545] dark:text-amber-400 bg-[#FFF8F6] dark:bg-[#0D0E11] p-2 rounded-xl border border-[#E8D5CE] dark:border-[#262A36]">
+                  <p className="text-xs text-[#5A4550] dark:text-[#A89B9F] mt-2 leading-relaxed font-sans">{integration.systemContext.role}</p>
+                  <div className="mt-2.5 text-[11px] font-mono text-[#6B2D5B] dark:text-[#C98DB8] bg-[#FAF7F5] dark:bg-[#1A1216] p-2 rounded-xl border border-[#E5D5CF] dark:border-[#3D2E35]">
                     SDK: {integration.systemContext.sdkRecommendation}
                   </div>
                 </div>
@@ -287,16 +287,16 @@ export default function LivePreview({
 
           {/* SubTab 3: Realtime Logs */}
           {activeSubTab === 'logs' && (
-            <div className="rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-white dark:bg-[#090A0D] p-4 font-mono text-xs max-h-60 overflow-y-auto space-y-2 shadow-inner transition-colors">
+            <div className="rounded-2xl border border-[#E5D5CF] dark:border-[#3D2E35] bg-white dark:bg-[#1A1216] p-4 font-mono text-xs max-h-60 overflow-y-auto space-y-2 shadow-inner transition-colors">
               {logs.map(log => (
                 <div key={log.id} className="flex items-start gap-2 leading-relaxed">
-                  <span className="text-[#80747B] dark:text-[#64748B] text-[10px] select-none shrink-0 font-mono">[{log.time}]</span>
+                  <span className="text-[#80747B] dark:text-[#7A6B70] text-[10px] select-none shrink-0 font-mono">[{log.time}]</span>
                   {log.code && (
-                    <span className="rounded-full bg-[#A8B79A]/20 dark:bg-[#1A1D24] text-[#2E4A28] dark:text-emerald-400 px-2 text-[10px] border border-[#A8B79A]/30 dark:border-[#262A36] shrink-0 font-bold">
+                    <span className="rounded-full bg-[#4A7A5E]/20 dark:bg-[#2D2025] text-[#2E4A28] dark:text-[#7EBF96] px-2 text-[10px] border border-[#4A7A5E]/30 dark:border-[#3D2E35] shrink-0 font-bold">
                       {log.code}
                     </span>
                   )}
-                  <span className={log.type === 'success' ? 'text-[#32102F] dark:text-emerald-300 font-medium' : 'text-[#4E444B] dark:text-gray-300'}>
+                  <span className={log.type === 'success' ? 'text-[#2A1525] dark:text-[#7EBF96] font-medium' : 'text-[#5A4550] dark:text-[#A89B9F]'}>
                     {log.msg}
                   </span>
                 </div>

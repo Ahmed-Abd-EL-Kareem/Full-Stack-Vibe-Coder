@@ -5,23 +5,25 @@
 @tailwind utilities;
 
 :root {
-  --background: #FFF8F6;
-  --foreground: #241915;
+  --background: #FAF7F5;
+  --foreground: #1F1518;
   --card-bg: #FFFFFF;
-  --card-border: #E8D5CE;
+  --card-border: #E5D5CF;
+  --card-hover-border: #D6C0B8;
   --text-muted: #80747B;
-  --accent-prima: #4A2545;
-  --accent-highlight: #FFE9E2;
+  --accent-prima: #6B2D5B;
+  --accent-highlight: #F5EBE8;
 }
 
 .dark {
-  --background: #0D0E11;
-  --foreground: #F8FAFC;
-  --card-bg: #14161B;
-  --card-border: #262A36;
-  --text-muted: #94A3B8;
-  --accent-prima: #F59E0B;
-  --accent-highlight: #1A1D24;
+  --background: #1A1216;
+  --foreground: #F2EDE9;
+  --card-bg: #241A1F;
+  --card-border: #3D2E35;
+  --card-hover-border: #5A4550;
+  --text-muted: #A89B9F;
+  --accent-prima: #C98DB8;
+  --accent-highlight: #2D2025;
 }
 
 body {
@@ -31,7 +33,7 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Scrollbars */
