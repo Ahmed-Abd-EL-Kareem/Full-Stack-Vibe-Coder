@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import {
   Smartphone,
   Layers,
@@ -46,6 +47,21 @@ export default function ResponseViewer({
 }: ResponseViewerProps) {
   const [activeTab, setActiveTab] = useState<'preview' | 'architecture' | 'code' | 'inspector' | 'raw'>('preview');
   const [copiedRaw, setCopiedRaw] = useState(false);
+  const tabContentRef = useRef<HTMLDivElement>(null);
+
+  // GSAP tab switch transition
+  useEffect(() => {
+    if (tabContentRef.current) {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!prefersReducedMotion) {
+        gsap.fromTo(
+          tabContentRef.current,
+          { opacity: 0, y: 6 },
+          { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }
+        );
+      }
+    }
+  }, [activeTab]);
 
   // Keyboard shortcut switching for 1-5
   useEffect(() => {
@@ -81,21 +97,21 @@ export default function ResponseViewer({
   };
 
   return (
-    <div className="w-full flex flex-col gap-3.5">
+    <div className="response-viewer-card w-full flex flex-col gap-3.5">
       {/* Error Recovery Alert Card */}
       {hasError && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 flex items-center justify-between gap-3 shadow-sm">
+        <div className="rounded-2xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/20 p-4 flex items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-2.5">
-            <AlertTriangle className="h-4 w-4 text-red-600 shrink-0" />
+            <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
             <div>
-              <h4 className="text-xs font-bold text-red-900">Stream Interrupted</h4>
-              <p className="text-[11px] text-red-700">The synthesized offline architecture fallback is active.</p>
+              <h4 className="text-xs font-bold text-red-900 dark:text-white">Stream Interrupted</h4>
+              <p className="text-[11px] text-red-700 dark:text-red-300">The synthesized offline architecture fallback is active.</p>
             </div>
           </div>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="flex items-center gap-1 rounded-full bg-white border border-red-300 px-3 py-1 text-xs font-sans font-semibold text-red-800 hover:bg-red-100 transition shadow-sm"
+              className="flex items-center gap-1 rounded-full bg-white dark:bg-red-900/40 border border-red-300 dark:border-red-500/40 px-3 py-1 text-xs font-sans font-semibold text-red-800 dark:text-red-200 hover:bg-red-100 transition shadow-sm"
             >
               <RotateCcw className="h-3 w-3" />
               <span>Retry</span>
@@ -105,17 +121,17 @@ export default function ResponseViewer({
       )}
 
       {/* Response Workspace Container */}
-      <div className="rounded-3xl border border-[#E8D5CE] bg-[#FFFFFF] p-5 sm:p-6 shadow-ballet-card">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E8D5CE]">
+      <div className="rounded-3xl border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFFFFF] dark:bg-[#14161B] p-5 sm:p-6 shadow-ballet-card dark:shadow-solaris-card transition-colors">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E8D5CE] dark:border-[#262A36] transition-colors">
           <div>
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#A8B79A]" />
-              <h2 className="font-serif text-lg sm:text-xl font-bold text-[#32102F] tracking-tight">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#A8B79A] dark:bg-emerald-400" />
+              <h2 className="font-serif text-lg sm:text-xl font-bold text-[#32102F] dark:text-white tracking-tight transition-colors">
                 {appName || 'Synthesized Solution'}
               </h2>
             </div>
-            <p className="text-xs text-[#4E444B] mt-0.5 font-sans">
-              <span className="text-[#4A2545] font-semibold">{selectedIntegrations.length} Active Services</span>
+            <p className="text-xs text-[#4E444B] dark:text-[#94A3B8] mt-0.5 font-sans transition-colors">
+              <span className="text-[#4A2545] dark:text-amber-400 font-semibold">{selectedIntegrations.length} Active Services</span>
               {selectedIntegrations.length > 0 && ` (${selectedIntegrations.join(', ')})`}
             </p>
           </div>
@@ -124,9 +140,9 @@ export default function ResponseViewer({
           <div className="flex items-center gap-2">
             <button
               onClick={handleDownloadMarkdown}
-              className="flex items-center gap-1.5 rounded-full border border-[#E8D5CE] bg-[#FFF8F6] px-3 py-1.5 text-xs font-sans font-medium text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFE9E2] transition shadow-sm"
+              className="flex items-center gap-1.5 rounded-full border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#1A1D24] px-3 py-1.5 text-xs font-sans font-medium text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFE9E2] dark:hover:bg-[#222630] transition shadow-sm"
             >
-              <Download className="h-3.5 w-3.5 text-[#4A2545]" />
+              <Download className="h-3.5 w-3.5 text-[#4A2545] dark:text-amber-400" />
               <span className="hidden sm:inline">Export Spec (.md)</span>
             </button>
 
@@ -134,18 +150,18 @@ export default function ResponseViewer({
               onClick={handleCopyRaw}
               className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-sans font-medium transition shadow-sm ${
                 copiedRaw
-                  ? 'border-[#A8B79A] bg-[#A8B79A]/20 text-[#2E4A28]'
-                  : 'border-[#E8D5CE] bg-[#FFF8F6] text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFE9E2]'
+                  ? 'border-[#A8B79A] dark:border-emerald-500/40 bg-[#A8B79A]/20 dark:bg-emerald-950/30 text-[#2E4A28] dark:text-emerald-300'
+                  : 'border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#1A1D24] text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFE9E2] dark:hover:bg-[#222630]'
               }`}
             >
               {copiedRaw ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-[#2E4A28]" />
+                  <Check className="h-3.5 w-3.5 text-[#2E4A28] dark:text-emerald-400" />
                   <span>Copied</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-[#4A2545]" />
+                  <Copy className="h-3.5 w-3.5 text-[#4A2545] dark:text-amber-400" />
                   <span>Copy</span>
                 </>
               )}
@@ -154,13 +170,13 @@ export default function ResponseViewer({
         </div>
 
         {/* 5-Studio Tab Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-3.5 border-b border-[#E8D5CE] pb-3.5 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-3.5 border-b border-[#E8D5CE] dark:border-[#262A36] pb-3.5 scrollbar-none transition-colors">
           <button
             onClick={() => setActiveTab('preview')}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'preview'
-                ? 'bg-[#4A2545] text-white shadow-sm'
-                : 'text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFF8F6]'
+                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
+                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
             }`}
           >
             <Smartphone className="h-3.5 w-3.5" />
@@ -172,8 +188,8 @@ export default function ResponseViewer({
             onClick={() => setActiveTab('architecture')}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'architecture'
-                ? 'bg-[#4A2545] text-white shadow-sm'
-                : 'text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFF8F6]'
+                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
+                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
             }`}
           >
             <Layers className="h-3.5 w-3.5" />
@@ -185,8 +201,8 @@ export default function ResponseViewer({
             onClick={() => setActiveTab('code')}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'code'
-                ? 'bg-[#4A2545] text-white shadow-sm'
-                : 'text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFF8F6]'
+                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
+                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
             }`}
           >
             <Code2 className="h-3.5 w-3.5" />
@@ -198,8 +214,8 @@ export default function ResponseViewer({
             onClick={() => setActiveTab('inspector')}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'inspector'
-                ? 'bg-[#4A2545] text-white shadow-sm'
-                : 'text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFF8F6]'
+                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
+                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
             }`}
           >
             <Terminal className="h-3.5 w-3.5" />
@@ -211,8 +227,8 @@ export default function ResponseViewer({
             onClick={() => setActiveTab('raw')}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-sans font-medium transition shrink-0 ${
               activeTab === 'raw'
-                ? 'bg-[#4A2545] text-white shadow-sm'
-                : 'text-[#4E444B] hover:text-[#32102F] hover:bg-[#FFF8F6]'
+                ? 'bg-[#4A2545] dark:bg-amber-500 text-white dark:text-[#0D0E11] font-semibold shadow-sm'
+                : 'text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white hover:bg-[#FFF8F6] dark:hover:bg-[#1A1D24]'
             }`}
           >
             <FileText className="h-3.5 w-3.5" />
@@ -222,7 +238,7 @@ export default function ResponseViewer({
         </div>
 
         {/* Studio Body Panes */}
-        <div className="pt-5">
+        <div ref={tabContentRef} className="pt-5">
           {activeTab === 'preview' && (
             <LivePreview
               appName={appName}
@@ -256,14 +272,14 @@ export default function ResponseViewer({
           )}
 
           {activeTab === 'raw' && (
-            <div className="overflow-hidden rounded-2xl border border-[#E8D5CE] bg-[#FFF8F6] p-4 font-mono text-xs shadow-inner">
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E8D5CE] text-[#80747B]">
+            <div className="overflow-hidden rounded-2xl border border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF8F6] dark:bg-[#090A0D] p-4 font-mono text-xs shadow-inner transition-colors">
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E8D5CE] dark:border-[#262A36] text-[#80747B] dark:text-[#94A3B8]">
                 <span>RAW STREAM OUTPUT</span>
-                <span className="text-[#2E4A28] font-bold font-mono text-[11px] bg-[#A8B79A]/20 px-2 py-0.5 rounded-full">
+                <span className="text-[#2E4A28] dark:text-emerald-400 font-bold font-mono text-[11px] bg-[#A8B79A]/20 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
                   {isStreaming ? 'Streaming...' : 'Complete'}
                 </span>
               </div>
-              <pre className="text-[#241915] whitespace-pre-wrap leading-relaxed max-h-[500px] overflow-y-auto">
+              <pre className="text-[#241915] dark:text-gray-200 whitespace-pre-wrap leading-relaxed max-h-[500px] overflow-y-auto">
                 {streamingText || '// Waiting for response...'}
               </pre>
             </div>

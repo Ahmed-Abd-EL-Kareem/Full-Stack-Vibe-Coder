@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import confetti from 'canvas-confetti';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -14,6 +15,7 @@ import { generateSmartMockResponse } from '@/lib/mockResponses';
 import { AVAILABLE_INTEGRATIONS } from '@/lib/integrations';
 
 export default function Home() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [prompt, setPrompt] = useState<string>(
     'Build a SaaS billing and subscription portal with Stripe checkout, automated customer emails via Gmail, and real-time sales alert notifications in Slack.'
   );
@@ -25,7 +27,7 @@ export default function Home() {
   const [systemPrompt, setSystemPrompt] = useState<string>('');
   const [streamingText, setStreamingText] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [hasGenerated, setHasGenerated] = useState<boolean>(true); // Initialized true for instant interactive split console!
+  const [hasGenerated, setHasGenerated] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   const [mockResult, setMockResult] = useState<any>(null);
   const [injectedMetadata, setInjectedMetadata] = useState<any>(null);
@@ -37,10 +39,14 @@ export default function Home() {
   const [provider, setProvider] = useState<'gemini' | 'openai'>('gemini');
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
 
-  // Load stored API key config and pre-populate initial preview state on mount
+  // Initialize theme from DOM / localStorage
   useEffect(() => {
     try {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'dark' : 'light');
+
       const storedKey = localStorage.getItem('stunning_api_key');
       const storedProv = localStorage.getItem('stunning_provider') as 'gemini' | 'openai';
       if (storedKey) setApiKey(storedKey);
@@ -55,7 +61,30 @@ export default function Home() {
     const initialMock = generateSmartMockResponse(prompt, activeIntegrationsList);
     setMockResult(initialMock);
     setStreamingText(initialMock.markdownContent);
+
+    // GSAP Choreographed Entrance Animation
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReducedMotion && mainContainerRef.current) {
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.6 } });
+      tl.from('.hero-content', { opacity: 0, y: 16, delay: 0.1 })
+        .from('.hero-presets', { opacity: 0, y: 12 }, '-=0.3')
+        .from('.prompt-studio-card', { opacity: 0, y: 20 }, '-=0.3')
+        .from('.response-viewer-card', { opacity: 0, y: 20 }, '-=0.4');
+    }
   }, []);
+
+  const handleToggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    try {
+      localStorage.setItem('stunning_theme', nextTheme);
+    } catch {}
+  };
 
   // Synchronize live system prompt and preview state when selection changes
   useEffect(() => {
@@ -64,7 +93,6 @@ export default function Home() {
       setSystemPrompt(injection.systemPrompt);
       setInjectedMetadata(injection.injectedMetadata);
 
-      // Keep mock result reactive when user toggles integrations
       const activeIntegrationsList = AVAILABLE_INTEGRATIONS.filter(i => selectedIntegrations.includes(i.id));
       const smartMock = generateSmartMockResponse(prompt, activeIntegrationsList);
       setMockResult(smartMock);
@@ -197,16 +225,18 @@ export default function Home() {
   const appName = mockResult?.title || (prompt.split(' ')[0] ? `${prompt.split(' ').slice(0, 3).join(' ')} Platform` : 'Stunning Platform');
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFF8F6] text-[#241915]">
-      {/* Navbar */}
+    <div className="flex min-h-screen flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors duration-200">
+      {/* Navbar with Theme Switcher */}
       <Navbar
         onOpenApiKeyModal={() => setApiKeyModalOpen(true)}
         apiKeySet={!!apiKey}
         onViewDoc={(doc) => setDocModalType(doc)}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Split Console */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6">
+      <main ref={mainContainerRef} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6">
         <Hero onSelectPreset={handleSelectPreset} />
 
         {/* Split Workstation: Left Input Deck | Right Studio Hub */}
@@ -243,25 +273,27 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E8D5CE] bg-[#FFF1EC] py-6 text-xs text-[#80747B] font-sans">
+      <footer className="border-t border-[#E8D5CE] dark:border-[#262A36] bg-[#FFF1EC] dark:bg-[#101217] py-6 text-xs text-[#80747B] dark:text-[#94A3B8] font-sans transition-colors">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-serif font-bold text-[#32102F]">Stunning Studio</span>
-            <span className="text-[#E8D5CE]">•</span>
-            <span className="text-[#4A2545] font-medium">Digital Choreography (Ballet Aesthetic)</span>
+            <span className="font-serif font-bold text-[#32102F] dark:text-white">Stunning Studio</span>
+            <span className="text-[#E8D5CE] dark:text-[#262A36]">•</span>
+            <span className="text-[#4A2545] dark:text-amber-400 font-medium">
+              {theme === 'dark' ? 'Solaris Precision (Dark)' : 'Digital Choreography (Light)'}
+            </span>
           </div>
 
           <div className="flex items-center gap-4 text-xs font-sans">
             <button
               onClick={() => setDocModalType('decisions')}
-              className="text-[#4E444B] hover:text-[#32102F] transition"
+              className="text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white transition"
             >
               DECISIONS.md (Part 2)
             </button>
-            <span className="text-[#E8D5CE]">•</span>
+            <span className="text-[#E8D5CE] dark:text-[#262A36]">•</span>
             <button
               onClick={() => setDocModalType('tech')}
-              className="text-[#4E444B] hover:text-[#32102F] transition"
+              className="text-[#4E444B] dark:text-[#94A3B8] hover:text-[#32102F] dark:hover:text-white transition"
             >
               TECH.md (Part 3 MCP)
             </button>

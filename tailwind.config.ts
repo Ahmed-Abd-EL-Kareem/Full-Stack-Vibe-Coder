@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,6 +12,7 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // Light Theme: Ballet Aesthetic
         ballet: {
           ground: "#FFF8F6",
           canvas: "#FFF1EC",
@@ -28,35 +30,35 @@ const config: Config = {
           mutedPlum: "#4E444B",
           sage: "#A8B79A",
         },
-        brand: {
-          DEFAULT: "#4A2545",
-          hover: "#32102F",
-          light: "#D9A5A0",
-          subtle: "#FFE9E2",
-          border: "#E8D5CE",
+        // Dark Theme: Solaris Precision Console
+        solaris: {
+          950: "#090A0D",
+          900: "#0D0E11",
+          850: "#101217",
+          800: "#14161B",
+          750: "#1A1D24",
+          700: "#222630",
+          border: "#262A36",
+          borderHover: "#383E4F",
+          muted: "#94A3B8",
+          dim: "#64748B",
+          text: "#F8FAFC",
+          amber: "#F59E0B",
+          amberHover: "#D97706",
         },
-        surface: {
-          DEFAULT: "#FFF8F6",
-          card: "#FFFFFF",
-          cardHover: "#FFF1EC",
-          elevated: "#FFE9E2",
-          border: "#E8D5CE",
-          borderHover: "#D1C3CB",
-          muted: "#80747B",
-          highlight: "#32102F"
-        }
       },
       fontFamily: {
         serif: ['Playfair Display', 'Georgia', 'serif'],
         display: ['Playfair Display', 'Georgia', 'serif'],
-        sans: ['Sora', 'system-ui', 'sans-serif'],
-        body: ['Sora', 'system-ui', 'sans-serif'],
+        sans: ['Sora', 'Inter', 'system-ui', 'sans-serif'],
+        body: ['Sora', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
         'ballet-card': '0 2px 10px rgba(74, 37, 69, 0.04), 0 1px 3px rgba(74, 37, 69, 0.02)',
         'ballet-elevated': '0 12px 30px rgba(74, 37, 69, 0.08), 0 4px 8px rgba(74, 37, 69, 0.04)',
-        'plum-focus': '0 0 0 3px rgba(74, 37, 69, 0.15)',
+        'solaris-card': '0 2px 8px rgba(0, 0, 0, 0.4)',
+        'solaris-elevated': '0 16px 36px rgba(0, 0, 0, 0.6)',
       }
     },
   },

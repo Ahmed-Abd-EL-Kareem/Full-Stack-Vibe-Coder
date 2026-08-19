@@ -15,14 +15,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light scroll-smooth">
-      <body className="min-h-screen bg-[#FFF8F6] text-[#241915] font-sans antialiased selection:bg-[#FFE9E2] selection:text-[#32102F] relative">
+    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const storedTheme = localStorage.getItem('stunning_theme');
+                if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased selection:bg-[#FFE9E2] dark:selection:bg-amber-500/20 selection:text-[#32102F] dark:selection:text-amber-300 relative transition-colors duration-200">
         {/* <!-- impeccable:contract
-THESIS: Digital Choreography — An editorial ballet aesthetic that marries classical typography (Playfair Display) with tactile softness (Warm Ivory, Deep Plum, Dusty Rose, and Soft Sage).
-OWN-WORLD: Warm Ivory (#FFF8F6), Deep Plum (#4A2545 / #32102F), Soft Blush (#FFE9E2), Muted Taupe (#80747B), Playfair Display serif headlines, and Sora UI text.
-STORY: The engineer selects external SaaS services in the left deck, inputs their specification, and immediately reviews the synchronized live interactive sandbox, architecture blueprint, and Next.js 15 TypeScript code.
+THESIS: Dual-Theme Studio & Digital Choreography — Seamless toggle between Warm Porcelain Ballet Aesthetic (Light) and Solaris Precision Console (Dark), elevated by GSAP entrance physics.
+OWN-WORLD: Dual-mode palette (Light: #FFF8F6, #4A2545, #FFE9E2; Dark: #0D0E11, #14161B, #F59E0B), Playfair Display + Sora typography, and GSAP micro-interactions.
+STORY: The engineer selects external SaaS services in the left deck, inputs their specification, and reviews the synchronized live interactive sandbox, architecture blueprint, and Next.js 15 TypeScript code.
 FIRST VIEWPORT: Integrated split-screen console with service dock, prompt canvas, and live interactive sandbox preview.
-FORM: Digital Choreography (Stitch project 9464067033150158650).
+FORM: Dual Theme Studio & GSAP Choreography (Stitch project 9464067033150158650).
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
 --> */}
         {children}
